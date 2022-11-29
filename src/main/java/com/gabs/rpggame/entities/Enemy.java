@@ -44,8 +44,6 @@ public class Enemy extends Entity {
 	@Override
 	public void eventTick() {
 		boolean increase;
-		
-
 		if(Main.random.nextInt(100) < 50) {
 			increase = false;
 			this.setSpeed(speed/2);
@@ -56,23 +54,23 @@ public class Enemy extends Entity {
 			
 		this.setMoving(false);
 		if(!this.isCollidingWithPlayer()) {
-			if (this.getX() < Main.player.getX() && World.placeFree(this.getX() + this.getSpeed(), this.getY()) && !isColliding(this.getX() + this.getSpeed(), this.getY())) {
+			if (this.getX() < Main.player.getX() && World.placeFree(this.getX() + this.getSpeed(), this.getY()) && !isColliding(this.getCollisionMask().getX() + this.getSpeed(), this.getCollisionMask().getY())) {
 				this.setMoving(true);
 				this.setX(this.getX() + this.getSpeed());
 				this.setDirection(rightDir);
 			}
-			else if (this.getX() > Main.player.getX() && World.placeFree(this.getX() - this.getSpeed(), this.getY()) && !isColliding(this.getX() - this.getSpeed(), this.getY())) {
+			else if (this.getX() > Main.player.getX() && World.placeFree(this.getX() - this.getSpeed(), this.getY()) && !isColliding(this.getCollisionMask().getX() - this.getSpeed(), this.getCollisionMask().getY())) {
 				this.setMoving(true);
 				this.setX(this.getX() - this.getSpeed());
 				this.setDirection(leftDir);
 			}
 			
-			if(this.getY() < Main.player.getY() && World.placeFree(this.getX(), this.getY() + this.getSpeed()) && !isColliding(this.getX(), this.getY() + this.getSpeed())) {
+			if(this.getY() < Main.player.getY() && World.placeFree(this.getX(), this.getY() + this.getSpeed()) && !isColliding(this.getCollisionMask().getX(), this.getCollisionMask().getY() + this.getSpeed())) {
 				this.setMoving(true);
 				this.setY(this.getY() + this.getSpeed());
 				this.setDirection(downDir);
 			}
-			else if(this.getY() > Main.player.getY() && World.placeFree(this.getX(), this.getY() - this.getSpeed()) && !isColliding(this.getX(), this.getY() - this.getSpeed())) {
+			else if(this.getY() > Main.player.getY() && World.placeFree(this.getX(), this.getY() - this.getSpeed()) && !isColliding(this.getCollisionMask().getX(), this.getCollisionMask().getY() - this.getSpeed())) {
 				this.setMoving(true);
 				this.setY(this.getY() - this.getSpeed());
 				this.setDirection(upDir);
@@ -107,22 +105,25 @@ public class Enemy extends Entity {
 		else
 			this.setSpeed(speed*2);
 		
-		
+		super.eventTick();
 	}
 	
 	public boolean isCollidingWithPlayer() {
-		Rectangle enemyCurrent = new Rectangle(this.getX() + this.getCollisionMask().getX(), this.getY() + this.getCollisionMask().getY(), this.getCollisionMask().getWidth(), this.getCollisionMask().getHeight());
-		Rectangle player = new Rectangle(Main.player.getX(), Main.player.getY(), Main.GameProperties.TileSize, Main.GameProperties.TileSize);
+		Rectangle enemyCurrent = new Rectangle(this.getCollisionMask().getX(), this.getCollisionMask().getY(), this.getCollisionMask().getWidth(), this.getCollisionMask().getHeight());
+		Rectangle player = new Rectangle(Main.player.getCollisionMask().getX(), Main.player.getCollisionMask().getY(), Main.GameProperties.TileSize, Main.GameProperties.TileSize);
 		return enemyCurrent.intersects(player);
 	}
 	
 	public boolean isColliding(int xNext, int yNext) {
-		Rectangle collisionBox = new Rectangle(xNext + this.getCollisionMask().getX(), yNext +  this.getCollisionMask().getY(), this.getCollisionMask().getWidth(), this.getCollisionMask().getHeight());
 		for(int i = 0; i < Main.enemies.size(); i++){
+			Rectangle collisionBox = new Rectangle(xNext, yNext, this.getCollisionMask().getWidth(), this.getCollisionMask().getHeight());
+			Rectangle targetEnemy = new Rectangle(Main.enemies.get(i).getCollisionMask().getX(), Main.enemies.get(i).getCollisionMask().getY(), Main.enemies.get(i).getCollisionMask().getWidth(), Main.enemies.get(i).getCollisionMask().getHeight());
 			if(Main.enemies.get(i) != this) {
-				Rectangle targetEnemy = new Rectangle(Main.enemies.get(i).getX(), Main.enemies.get(i).getY(), Main.GameProperties.TileSize, Main.GameProperties.TileSize);
-				return collisionBox.intersects(targetEnemy);
+				if(collisionBox.intersects(targetEnemy)) {
+					return true;
+				}
 			}
+				
 		}
 		return false;
 	}

@@ -5,7 +5,7 @@ public class CollisionMask {
 	private int y;
 	private int width;
 	private int height;
-	private boolean visible = true;
+	private boolean visible;
 	
 	public CollisionMask() {}
 	public CollisionMask(int width, int height) {

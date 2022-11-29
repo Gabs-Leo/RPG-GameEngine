@@ -6,6 +6,10 @@ public class GameProperties {
 	public int ScreenWidth;
 	public int ScreenHeight;
 	public int ScreenScale;
+	public boolean ShowCollisionMask;
 	
+	//Player Props
 	public int PlayerMaxLife;
+	public int PlayerArmor;
+	public int PlayerMagicalResistance;
 }

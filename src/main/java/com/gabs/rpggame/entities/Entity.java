@@ -25,7 +25,9 @@ public abstract class Entity {
 	private int magicalResistance;
 	private DamageType damageType = DamageType.PHYSICAL_DAMAGE;
 	
-	public Entity() {}
+	public Entity() {
+		collisionMask.setVisible(Main.GameProperties.ShowCollisionMask);
+	}
 	public Entity(int x, int y, int width, int height, BufferedImage sprite) {
 		super();
 		this.x = x;
@@ -33,11 +35,21 @@ public abstract class Entity {
 		this.width = width;
 		this.height = height;
 		this.sprite = sprite;
+		
+		collisionMask.setVisible(true);
 	}
 
 
 	public void eventTick() {
-		
+		this.collisionMask.setX(this.getX() + this.getWidth() / 2 - this.collisionMask.getWidth() / 2);
+		this.collisionMask.setY(this.getY() + this.getHeight() / 2 - this.collisionMask.getHeight() / 2);
+	}
+	
+	public void heal(int value) {
+		if(this.getLife() + value > this.getMaxLife())
+			this.setLife(this.getMaxLife());
+		else
+			this.setLife(this.getLife() + value);
 	}
 	
 	public void inflictDamage(int amount, DamageType damageType, Entity target) {
@@ -67,12 +79,13 @@ public abstract class Entity {
 	}
 	
 	public void render(Graphics g) {
-		g.drawImage(sprite, this.getX() - Camera.getX(), this.getY() - Camera.getY(), null);
+		if(this instanceof Prop || this instanceof Collectable)
+			g.drawImage(sprite, this.getX() - Camera.getX(), this.getY() - Camera.getY(), null);
 		
 		if(this.getCollisionMask().isVisible()) {
 			g.setColor(new Color(0f, 0f, 0f, .5f));
-			g.fillRect((this.getX() + Main.GameProperties.TileSize / 2 - this.getCollisionMask().getWidth() / 2 - Camera.getX()), 
-						this.getY() + Main.GameProperties.TileSize / 2 - this.getCollisionMask().getHeight() / 2 - Camera.getY(), 
+			g.fillRect((this.getCollisionMask().getX() - Camera.getX()), 
+						this.getCollisionMask().getY() - Camera.getY(), 
 						this.getCollisionMask().getWidth(), this.getCollisionMask().getHeight());
 		}
 	}
@@ -94,6 +107,7 @@ public abstract class Entity {
 	}
 
 	public Entity setX(int x) {
+		this.collisionMask.setX(x);
 		this.x = x;
 		return this;
 	}
@@ -103,6 +117,7 @@ public abstract class Entity {
 	}
 
 	public Entity setY(int y) {
+		this.collisionMask.setY(y);
 		this.y = y;
 		return this;
 	}

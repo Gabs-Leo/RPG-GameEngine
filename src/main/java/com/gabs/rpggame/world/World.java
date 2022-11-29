@@ -100,8 +100,7 @@ public class World {
 					} else if (currentTile == 0xFFFE0000) {
 						Enemy enemy = new Enemy();
 						enemy.getCollisionMask()
-							.setWidth(16).setHeight(16)
-							.setVisible(true);
+							.setWidth(16).setHeight(16);
 						enemy
 							.setDamage(20);
 						enemy
@@ -132,6 +131,8 @@ public class World {
 					tiles[xx + (yy * WIDTH)] = tile;
 				}
 			}
+			Main.player.setX(64);
+			Main.player.setY(64);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

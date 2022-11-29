@@ -65,29 +65,30 @@ public class Player extends Entity implements KeyListener{
 	private int ammo = 0;
 	
 	public Player() {
-		this.setMaxLife(100);
-		this.setLife(80);
-		this.setArmor(100);
-	}
-	
-	public void heal(int value) {
-		if(this.getLife() + value > this.getMaxLife())
-			this.setLife(this.getMaxLife());
-		else
-			this.setLife(this.getLife() + value);
+		this.setMaxLife(Main.GameProperties.PlayerMaxLife);
+		this.setLife(this.getMaxLife());
+		this.setArmor(Main.GameProperties.PlayerArmor);
 	}
 
 	@Override
 	public void eventTick() {
+		
+		
 		this.setMoving(false);
 		if(this.isRight() && World.placeFree(this.getX() + this.getSpeed(), this.getY()) && this.getX() + Main.GameProperties.TileSize <= World.WIDTH*Main.GameProperties.TileSize) {
 			this.setMoving(true);
-			this.setX(this.getX() + this.getSpeed());
+			if(this.isDown() ||this.isUp())
+				this.setX(this.getX() + this.getSpeed()/2);
+			else
+				this.setX(this.getX() + this.getSpeed());
 			this.setDirection(rightDir);
 			
 		}else if (this.isLeft() && World.placeFree(this.getX() - this.getSpeed(), this.getY()) && this.getX() >= 0) {
 			this.setMoving(true);
-			this.setX(this.getX() - this.getSpeed());
+			if(this.isDown() || this.isUp())
+				this.setX(this.getX() - this.getSpeed()/2);
+			else
+				this.setX(this.getX() - this.getSpeed());
 			this.setDirection(leftDir);
 		}
 		if(this.isUp() && World.placeFree(this.getX(), this.getY() - this.getSpeed()) && this.getY() >= 0) {
@@ -136,6 +137,8 @@ public class Player extends Entity implements KeyListener{
 			Camera.setX(this.getX() - Main.GameProperties.ScreenWidth/2);
 			Camera.setY(this.getY() - Main.GameProperties.ScreenHeight/2);
 		}
+		
+		super.eventTick();
 	}
 	
 	@Override
@@ -173,7 +176,7 @@ public class Player extends Entity implements KeyListener{
 				//g.drawImage(leftFrames.get(index), this.getX() - Camera.getX(), this.getY() - Camera.getY(), null);
 			}
 		}
-
+		super.render(g);
 	}
 	
 	@Override

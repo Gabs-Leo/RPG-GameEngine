@@ -59,7 +59,7 @@ public class Main extends Canvas implements Runnable {
 		enemies = new ArrayList<Enemy>();
 		
 		spritesheet = new Spritesheet("/HaloweenSpritesheet.png");
-		world = new World("/map.png");
+		
 		ui = new UI();
 		player = new Player();
 		player
@@ -69,7 +69,8 @@ public class Main extends Canvas implements Runnable {
 		player
 			.setSpeed(4);
 		addKeyListener(player);
-
+		
+		world = new World("/map.png");
 		entities.add(player);
 	};
 	
@@ -132,7 +133,7 @@ public class Main extends Canvas implements Runnable {
 			ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
 			GameProperties = mapper.readValue(file, GameProperties.class);
 		} catch (IOException e) {
-			JOptionPane.showMessageDialog(null, "Erro em Game-Properties! Tente baixar o jogo novamente!");
+			JOptionPane.showMessageDialog(null, "Erro em Game Properties! Tente baixar o jogo novamente!");
 		}
 		Main main = new Main();
 		main.start();
