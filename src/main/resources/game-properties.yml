@@ -1,0 +1,5 @@
+TileSize: 32
+Clamp: false
+ScreenWidth: 640
+ScreenHeight: 360
+ScreenScale: 2
