@@ -4,7 +4,6 @@ import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
-import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -13,9 +12,8 @@ import java.util.List;
 import java.util.Random;
 
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 
-import com.fasterxml.jackson.core.exc.StreamReadException;
-import com.fasterxml.jackson.databind.DatabindException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.gabs.rpggame.entities.Enemy;
@@ -128,11 +126,14 @@ public class Main extends Canvas implements Runnable {
 		bs.show();
 	}
 	
-	public static void main(String args[]) throws StreamReadException, DatabindException, IOException {
-		File file = new File(Thread.currentThread().getContextClassLoader().getResource("game-properties.yml").getFile());
-		ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
-		GameProperties = mapper.readValue(file, GameProperties.class);
-		
+	public static void main(String args[]) {
+		try {
+			File file = new File(Thread.currentThread().getContextClassLoader().getResource("game-properties.yml").getFile());
+			ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
+			GameProperties = mapper.readValue(file, GameProperties.class);
+		} catch (IOException e) {
+			JOptionPane.showMessageDialog(null, "Erro em Game-Properties! Tente baixar o jogo novamente!");
+		}
 		Main main = new Main();
 		main.start();
 	};
@@ -193,14 +194,7 @@ public class Main extends Canvas implements Runnable {
 		stop();
 	};
 	
-	public void startFrame() {
-		try {
-			frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
-			System.out.println("monka");
-		} catch (Exception e) {
-			
-		}
-		
+	public void startFrame() {		
 		this.setPreferredSize(new Dimension(GameProperties.ScreenWidth*GameProperties.ScreenScale, GameProperties.ScreenHeight*GameProperties.ScreenScale));
 		frame = new JFrame("Game #1");
 		frame.add(this);

@@ -6,4 +6,6 @@ public class GameProperties {
 	public int ScreenWidth;
 	public int ScreenHeight;
 	public int ScreenScale;
+	
+	public int PlayerMaxLife;
 }

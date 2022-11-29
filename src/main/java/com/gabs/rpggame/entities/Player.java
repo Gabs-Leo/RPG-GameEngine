@@ -61,21 +61,13 @@ public class Player extends Entity implements KeyListener{
 			Main.spritesheet.getSprite(32+256, 96+256, 32, 32),
 			Main.spritesheet.getSprite(64+256, 96+256, 32, 32));
 	
-	private int maxLife = 100;
-	private int life = 80;
+
 	private int ammo = 0;
-	private boolean targetable = false;
-	private boolean takingDamage = false;
 	
-	public Player() {	
-		/*
-		for (int i = 0; i < 3; i++) {
-			downFrames.add(Main.spritesheet.getSprite(i * 32, 0, GameProperties.TILE_SIZE, GameProperties.TILE_SIZE));
-			leftFrames.add(Main.spritesheet.getSprite(i * 32, 32, GameProperties.TILE_SIZE, GameProperties.TILE_SIZE));
-			rightFrames.add(Main.spritesheet.getSprite(i * 32, 64, GameProperties.TILE_SIZE, GameProperties.TILE_SIZE));
-			upFrames.add(Main.spritesheet.getSprite(i * 32, 96, GameProperties.TILE_SIZE, GameProperties.TILE_SIZE));
-		}
-		*/
+	public Player() {
+		this.setMaxLife(100);
+		this.setLife(80);
+		this.setArmor(100);
 	}
 	
 	public void heal(int value) {
@@ -272,42 +264,6 @@ public class Player extends Entity implements KeyListener{
 	}
 	public Player setMoving(boolean moving) {
 		this.moving = moving;
-		return this;
-	}
-
-	public int getLife() {
-		return life;
-	}
-
-	public Player setLife(int life) {
-		this.life = life;
-		return this;
-	}
-
-	public boolean isTargetable() {
-		return targetable;
-	}
-
-	public Player setTargetable(boolean targetable) {
-		this.targetable = targetable;
-		return this;
-	}
-
-	public boolean isTakingDamage() {
-		return takingDamage;
-	}
-
-	public Player setTakingDamage(boolean takingDamage) {
-		this.takingDamage = takingDamage;
-		return this;
-	}
-
-	public int getMaxLife() {
-		return maxLife;
-	}
-
-	public Player setMaxLife(int maxLife) {
-		this.maxLife = maxLife;
 		return this;
 	}
 

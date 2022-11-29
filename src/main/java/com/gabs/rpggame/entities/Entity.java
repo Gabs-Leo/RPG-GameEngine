@@ -8,11 +8,22 @@ import java.awt.image.BufferedImage;
 import com.gabs.rpggame.Main;
 import com.gabs.rpggame.world.Camera;
 import com.gabs.rpggame.world.CollisionMask;
+import com.gabs.rpggame.world.DamageType;
+import com.gabs.rpggame.world.World;
 
 public abstract class Entity {
 	private int x, y, width = Main.GameProperties.TileSize, height = Main.GameProperties.TileSize;
 	private BufferedImage sprite;
 	private CollisionMask collisionMask = new CollisionMask(Main.GameProperties.TileSize, Main.GameProperties.TileSize);
+	
+	private boolean targetable = true;
+	private boolean takingDamage = false;
+	
+	private int maxLife;
+	private int life;
+	private int armor;
+	private int magicalResistance;
+	private DamageType damageType = DamageType.PHYSICAL_DAMAGE;
 	
 	public Entity() {}
 	public Entity(int x, int y, int width, int height, BufferedImage sprite) {
@@ -27,6 +38,32 @@ public abstract class Entity {
 
 	public void eventTick() {
 		
+	}
+	
+	public void inflictDamage(int amount, DamageType damageType, Entity target) {
+		if(target.isTargetable()) {
+			if(!target.isTakingDamage()) {
+				switch(damageType) {
+					case PHYSICAL_DAMAGE: {
+						int damage = World.calculatePostMitigationDamage(amount, target.getArmor());
+						target.setLife(target.getLife() - damage <= 0 ? 0 : target.getLife() - damage);
+						break;
+					}
+					case MAGICAL_DAMAGE: {
+						int damage = World.calculatePostMitigationDamage(amount, target.getMagicalResistance());
+						target.setLife(target.getLife() - damage <= 0 ? 0 : target.getLife() - damage);
+						break;
+					}
+					case TRUE_DAMAGE: {
+						int damage = amount;
+						target.setLife(target.getLife() - damage <= 0 ? 0 : target.getLife() - damage);
+						break;
+					}
+				}
+				if(target instanceof Player)
+					Main.player.setTakingDamage(true);
+			}
+		}
 	}
 	
 	public void render(Graphics g) {
@@ -101,6 +138,55 @@ public abstract class Entity {
 	}
 	public Entity setCollisionMask(CollisionMask collisionMask) {
 		this.collisionMask = collisionMask;
+		return this;
+	}
+	public boolean isTargetable() {
+		return targetable;
+	}
+	public Entity setTargetable(boolean targetable) {
+		this.targetable = targetable;
+		return this;
+	}
+	public boolean isTakingDamage() {
+		return takingDamage;
+	}
+	public Entity setTakingDamage(boolean takingDamage) {
+		this.takingDamage = takingDamage;
+		return this;
+	}
+	public int getMaxLife() {
+		return maxLife;
+	}
+	public Entity setMaxLife(int maxLife) {
+		this.maxLife = maxLife;
+		return this;
+	}
+	public int getLife() {
+		return life;
+	}
+	public Entity setLife(int life) {
+		this.life = life;
+		return this;
+	}
+	public DamageType getDamageType() {
+		return damageType;
+	}
+	public Entity setDamageType(DamageType damageType) {
+		this.damageType = damageType;
+		return this;
+	}
+	public int getArmor() {
+		return armor;
+	}
+	public Entity setArmor(int armor) {
+		this.armor = armor;
+		return this;
+	}
+	public int getMagicalResistance() {
+		return magicalResistance;
+	}
+	public Entity setMagicalResistance(int magicalResistance) {
+		this.magicalResistance = magicalResistance;
 		return this;
 	}
 }

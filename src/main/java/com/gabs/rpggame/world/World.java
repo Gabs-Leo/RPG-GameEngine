@@ -187,6 +187,10 @@ public class World {
 		}
 	}
 	
+	public static int calculatePostMitigationDamage(int damage, int resistance) {
+		return damage / (1 + resistance / 100);
+	};
+	
 	public Tile[] getTiles() {
 		return tiles;
 	}

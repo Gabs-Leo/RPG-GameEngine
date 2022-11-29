@@ -79,13 +79,14 @@ public class Enemy extends Entity {
 			}	
 		} else {
 			//Contato com player
-			
+			this.inflictDamage(this.damage, this.getDamageType(), Main.player);
+			/*
 			if(Main.player.isTargetable() && !Main.player.isTakingDamage()) {
 				Main.player.setLife(Main.player.getLife()-this.getDamage());
 				System.out.println("Dano!");
 				System.out.println(Main.player.getLife());
 				Main.player.setTakingDamage(true);
-			}
+			}*/
 		}
 		
 		if(this.isMoving()) {
