@@ -24,6 +24,7 @@ public abstract class Entity {
 	private int armor;
 	private int magicalResistance;
 	private DamageType damageType = DamageType.PHYSICAL_DAMAGE;
+	private int damage;
 	
 	public Entity() {
 		collisionMask.setVisible(Main.GameProperties.ShowCollisionMask);
@@ -202,6 +203,13 @@ public abstract class Entity {
 	}
 	public Entity setMagicalResistance(int magicalResistance) {
 		this.magicalResistance = magicalResistance;
+		return this;
+	}
+	public int getDamage() {
+		return damage;
+	}
+	public Entity setDamage(int damage) {
+		this.damage = damage;
 		return this;
 	}
 }

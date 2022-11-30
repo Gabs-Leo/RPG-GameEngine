@@ -4,9 +4,12 @@ Clamp: false
 ScreenWidth: 640
 ScreenHeight: 360
 ScreenScale: 2
-ShowCollisionMask: true
+ShowCollisionMask: false
 
 #Player Settings
 PlayerMaxLife: 100
 PlayerArmor: 20
 PlayerMagicalResistance: 20
+
+InventorySizeX: 9
+InvenrotySizeY: 5

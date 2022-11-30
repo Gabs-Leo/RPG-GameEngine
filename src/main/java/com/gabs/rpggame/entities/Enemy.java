@@ -24,8 +24,6 @@ public class Enemy extends Entity {
 			animDelay = 5,
 			index = 1;
 	
-	private int damage;
-	
 	private List<BufferedImage>
 				rightFrames = new ArrayList<>(),
 				leftFrames = new ArrayList<>(),
@@ -33,6 +31,7 @@ public class Enemy extends Entity {
 				downFrames = new ArrayList<>();
 	
 	public Enemy () {
+		this.setDamage(20);
 		for (int i = 0; i < 3; i++) {
 			downFrames.add(Main.spritesheet.getSprite(96 + (i) * 32, 0, Main.GameProperties.TileSize, Main.GameProperties.TileSize));
 			leftFrames.add(Main.spritesheet.getSprite(96 + (i) * 32, 32, Main.GameProperties.TileSize, Main.GameProperties.TileSize));
@@ -77,7 +76,7 @@ public class Enemy extends Entity {
 			}	
 		} else {
 			//Contato com player
-			this.inflictDamage(this.damage, this.getDamageType(), Main.player);
+			this.inflictDamage(this.getDamage(), this.getDamageType(), Main.player);
 			/*
 			if(Main.player.isTargetable() && !Main.player.isTakingDamage()) {
 				Main.player.setLife(Main.player.getLife()-this.getDamage());
@@ -178,15 +177,6 @@ public class Enemy extends Entity {
 
 	public Enemy setAnimDelay(int animDelay) {
 		this.animDelay = animDelay;
-		return this;
-	}
-
-	public int getDamage() {
-		return damage;
-	}
-
-	public Enemy setDamage(int damage) {
-		this.damage = damage;
 		return this;
 	}
 }

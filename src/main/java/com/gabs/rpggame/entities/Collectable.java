@@ -6,6 +6,16 @@ import com.gabs.rpggame.Main;
 public class Collectable extends Entity {
 	private FunctionalInterface method;
 	
+	private int size = 3;
+	private boolean placeholder = false;
+	
+	public Collectable() {}
+	public Collectable(int size, boolean placeholder) {
+		super();
+		this.size = size;
+		this.placeholder = placeholder;
+	}
+
 	@Override
 	public void eventTick() {
 		super.eventTick();
@@ -16,6 +26,8 @@ public class Collectable extends Entity {
 		if(Entity.isColliding(this, Main.player)) {
 			method.execute();
 			Main.entities.remove(this);
+			Main.player.collectItem(this);
+			Main.player.printInventory();
 		}
 	}
 
@@ -27,5 +39,24 @@ public class Collectable extends Entity {
 		this.method = method;
 		return this;
 	}
+
+	public int getSize() {
+		return size;
+	}
+
+	public Collectable setSize(int size) {
+		this.size = size;
+		return this;
+	}
+
+	public boolean isPlaceholder() {
+		return placeholder;
+	}
+
+	public Collectable setPlaceholder(boolean placeholder) {
+		this.placeholder = placeholder;
+		return this;
+	}
+	
 	
 }

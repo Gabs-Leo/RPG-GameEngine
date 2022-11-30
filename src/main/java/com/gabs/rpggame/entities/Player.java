@@ -3,6 +3,8 @@ package com.gabs.rpggame.entities;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.gabs.rpggame.Main;
 import com.gabs.rpggame.graphics.Animation;
@@ -60,20 +62,48 @@ public class Player extends Entity implements KeyListener{
 			Main.spritesheet.getSprite(0+256, 96+256, 32, 32),
 			Main.spritesheet.getSprite(32+256, 96+256, 32, 32),
 			Main.spritesheet.getSprite(64+256, 96+256, 32, 32));
-	
 
 	private int ammo = 0;
 	
+	private List<List<Collectable>> inventory = new ArrayList<>();
+	private List<Collectable> wearables = new ArrayList<>();
+	
 	public Player() {
+		for(int i = 0; i < Main.GameProperties.InvenrotySizeY; i++) {
+			inventory.add(new ArrayList<>());
+			for(int j = 0; j < Main.GameProperties.InventorySizeX; j++)
+				inventory.get(i).add(null);
+		}
+		for(int i = 0; i < 7; i++)
+			wearables.add(null);
+		
+		printInventory();
 		this.setMaxLife(Main.GameProperties.PlayerMaxLife);
 		this.setLife(this.getMaxLife());
 		this.setArmor(Main.GameProperties.PlayerArmor);
 	}
+	
+	public void printInventory() {
+		inventory.forEach(i -> System.out.println(i));
+	}
+	
+	public void collectItem(Collectable item) {
+		for(int i = 0; i < inventory.size(); i++) {
+			for(int j = 0; j < inventory.get(i).size(); j++) {
+				if(inventory.get(i).get(j) == null) {
+					inventory.get(i).set(j, item);
+					if(inventory.get(i).get(j).getSize() > 1) {
+						for(int k = 0; k < inventory.get(i).get(j).getSize()-1; k++)
+							inventory.get(i).set(j+1+k, item.setPlaceholder(true));
+					}
+					return;
+				}
+			}
+		}
+	}
 
 	@Override
 	public void eventTick() {
-		
-		
 		this.setMoving(false);
 		if(this.isRight() && World.placeFree(this.getX() + this.getSpeed(), this.getY()) && this.getX() + Main.GameProperties.TileSize <= World.WIDTH*Main.GameProperties.TileSize) {
 			this.setMoving(true);
