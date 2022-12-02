@@ -6,6 +6,7 @@ import com.gabs.rpggame.Main;
 public class Collectable extends Entity {
 	private FunctionalInterface method;
 	
+	private int[] positions = new int[2];
 	private int size = 3;
 	private boolean placeholder = false;
 	
@@ -57,6 +58,7 @@ public class Collectable extends Entity {
 		this.placeholder = placeholder;
 		return this;
 	}
-	
-	
+	public int[] getPositions() {
+		return positions;
+	}
 }

@@ -85,18 +85,45 @@ public class Player extends Entity implements KeyListener{
 	
 	public void printInventory() {
 		inventory.forEach(i -> System.out.println(i));
+		inventory.get(0).forEach(i -> {if(i != null) System.out.println(i.isPlaceholder()); else System.out.println("empty");});
 	}
 	
 	public void collectItem(Collectable item) {
 		for(int i = 0; i < inventory.size(); i++) {
 			for(int j = 0; j < inventory.get(i).size(); j++) {
 				if(inventory.get(i).get(j) == null) {
+					item.getPositions()[0] = i;
+					item.getPositions()[1] = j;
+					item.setPlaceholder(false);
 					inventory.get(i).set(j, item);
 					if(inventory.get(i).get(j).getSize() > 1) {
-						for(int k = 0; k < inventory.get(i).get(j).getSize()-1; k++)
-							inventory.get(i).set(j+1+k, item.setPlaceholder(true));
+						for(int k = 0; k < inventory.get(i).get(j).getSize()-1; k++) {
+							Collectable col = new Collectable();
+							col.setPlaceholder(true);
+							inventory.get(i).set(j+1+k, col);
+						}
 					}
 					return;
+				}
+			}
+		}
+		for(int i = 0; i < inventory.size(); i++) {
+			for(int j = 0; j < inventory.get(i).size(); j++) {
+				
+			}
+		}
+	}
+	
+	public void consumeItem(int positionX, int positionY) {
+		inventory.get(positionX).set(positionY, null);
+		for(int i = positionX; i < inventory.size(); i++) {
+			for(int j = positionY; j < inventory.get(i).size(); j++) {
+				if(inventory.get(i).get(j) != null ) {
+					if(inventory.get(i).get(j).isPlaceholder()) {
+						inventory.get(i).set(j, null);
+					} else {
+						return;
+					}
 				}
 			}
 		}
@@ -219,6 +246,11 @@ public class Player extends Entity implements KeyListener{
 			this.setRight(true);
 		} else if (e.getKeyCode() == KeyEvent.VK_LEFT) {
 			this.setLeft(true);
+		}
+		
+		if (e.getKeyCode() == KeyEvent.VK_E) {
+			this.consumeItem(0, 0);
+			this.printInventory();
 		}
 		
 		if(e.getKeyCode() == KeyEvent.VK_UP) {

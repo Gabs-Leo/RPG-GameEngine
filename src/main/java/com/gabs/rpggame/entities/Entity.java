@@ -16,7 +16,7 @@ public abstract class Entity {
 	private BufferedImage sprite;
 	private CollisionMask collisionMask = new CollisionMask(Main.GameProperties.TileSize, Main.GameProperties.TileSize);
 	
-	private boolean targetable = true;
+	private boolean targetable = false;
 	private boolean takingDamage = false;
 	
 	private int maxLife;
