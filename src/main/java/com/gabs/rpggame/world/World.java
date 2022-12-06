@@ -7,9 +7,12 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 
 import com.gabs.rpggame.Main;
-import com.gabs.rpggame.entities.Collectable;
 import com.gabs.rpggame.entities.Enemy;
 import com.gabs.rpggame.entities.Prop;
+import com.gabs.rpggame.entities.collectables.Collectable;
+import com.gabs.rpggame.entities.collectables.Equipment;
+import com.gabs.rpggame.entities.collectables.EquipmentType;
+import com.gabs.rpggame.graphics.Animation;
 
 public class World {
 	
@@ -127,6 +130,23 @@ public class World {
 						
 						ammo.setMethod(() -> Main.player.setAmmo(Main.player.getAmmo() + 10));
 						Main.entities.add(ammo);
+					}
+					//Sword
+					else if(currentTile == 0xFFfa9aff) {
+						Equipment sword = new Equipment();
+						sword
+							.setEquipmentType(EquipmentType.HANDS)
+							.setEquippedAnimation(new Animation(1, 5, Main.spritesheet.getSprite(352, 256, Main.GameProperties.TileSize, Main.GameProperties.TileSize),
+																	  Main.spritesheet.getSprite(352+32, 256, Main.GameProperties.TileSize, Main.GameProperties.TileSize),
+																	  Main.spritesheet.getSprite(352+64, 256, Main.GameProperties.TileSize, Main.GameProperties.TileSize)))
+							.setSprite(Main.spritesheet.getSprite(0, 320, Main.GameProperties.TileSize, Main.GameProperties.TileSize))
+							.setX(xx * Main.GameProperties.TileSize)
+							.setY(yy * Main.GameProperties.TileSize);
+						
+						
+						
+						sword.setMethod(() -> sword.equipTo(Main.player));
+						Main.entities.add(sword);
 					}
 					tiles[xx + (yy * WIDTH)] = tile;
 				}

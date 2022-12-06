@@ -10,7 +10,7 @@ import com.gabs.rpggame.Main;
 import com.gabs.rpggame.world.Camera;
 import com.gabs.rpggame.world.World;
 
-public class Enemy extends Entity {
+public class Enemy extends AliveEntity {
 	
 	private int speed = 4;
 	private int rightDir = 0,

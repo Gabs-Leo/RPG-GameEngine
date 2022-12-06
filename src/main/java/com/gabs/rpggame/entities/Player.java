@@ -7,11 +7,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.gabs.rpggame.Main;
+import com.gabs.rpggame.entities.collectables.Collectable;
 import com.gabs.rpggame.graphics.Animation;
 import com.gabs.rpggame.world.Camera;
 import com.gabs.rpggame.world.World;
 
-public class Player extends Entity implements KeyListener{
+public class Player extends AliveEntity implements KeyListener{
 	
 	private boolean right, left, up, down;
 	private int rightDir = 0, 
@@ -66,8 +67,6 @@ public class Player extends Entity implements KeyListener{
 	private int ammo = 0;
 	
 	private List<Collectable> inventory = new ArrayList<>();
-	private List<Collectable> equipments = new ArrayList<>();
-	
 	public Player() {
 		/*
 		for(int i = 0; i < Main.GameProperties.InvenrotySizeY; i++) {
@@ -75,10 +74,9 @@ public class Player extends Entity implements KeyListener{
 			for(int j = 0; j < Main.GameProperties.InventorySizeX; j++)
 				inventory.get(i).add(null);
 		}*/
-		for(int i = 0; i < 7; i++)
-			equipments.add(null);
 		
 		//printInventory();
+		super();
 		this.setMaxLife(Main.GameProperties.PlayerMaxLife);
 		this.setLife(this.getMaxLife());
 		this.setArmor(Main.GameProperties.PlayerArmor);
@@ -205,6 +203,8 @@ public class Player extends Entity implements KeyListener{
 		if(!this.isTakingDamage()) {
 			if(this.getDirection() == downDir) {
 				g.drawImage(downAnimation.getImages().get(downAnimation.getIndex()), this.getX() - Camera.getX(), this.getY() - Camera.getY(), null);
+				if(this.getEquipments().get(4) != null)
+					g.drawImage(this.getEquipments().get(4).getEquippedAnimation().getImages().get(downAnimation.getIndex()), this.getX() - Camera.getX(), this.getY() - Camera.getY(), null);
 				//g.drawImage(downFrames.get(index), this.getX() - Camera.getX(), this.getY() - Camera.getY(), null);
 			}else if(this.getDirection() == upDir) {
 				g.drawImage(upAnimation.getImages().get(upAnimation.getIndex()), this.getX() - Camera.getX(), this.getY() - Camera.getY(), null);

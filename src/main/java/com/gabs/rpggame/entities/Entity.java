@@ -4,8 +4,12 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.gabs.rpggame.Main;
+import com.gabs.rpggame.entities.collectables.Collectable;
+import com.gabs.rpggame.entities.collectables.Equipment;
 import com.gabs.rpggame.world.Camera;
 import com.gabs.rpggame.world.CollisionMask;
 import com.gabs.rpggame.world.DamageType;
@@ -36,8 +40,6 @@ public abstract class Entity {
 		this.width = width;
 		this.height = height;
 		this.sprite = sprite;
-		
-		collisionMask.setVisible(true);
 	}
 
 

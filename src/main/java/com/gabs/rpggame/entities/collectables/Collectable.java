@@ -1,6 +1,8 @@
-package com.gabs.rpggame.entities;
+package com.gabs.rpggame.entities.collectables;
 
 import com.gabs.rpggame.Main;
+import com.gabs.rpggame.entities.Entity;
+import com.gabs.rpggame.entities.FunctionalInterface;
 
 
 public class Collectable extends Entity {
