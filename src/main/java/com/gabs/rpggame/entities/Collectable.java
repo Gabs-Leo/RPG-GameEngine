@@ -28,7 +28,7 @@ public class Collectable extends Entity {
 			method.execute();
 			Main.entities.remove(this);
 			Main.player.collectItem(this);
-			Main.player.printInventory();
+			//Main.player.printInventory();
 		}
 	}
 

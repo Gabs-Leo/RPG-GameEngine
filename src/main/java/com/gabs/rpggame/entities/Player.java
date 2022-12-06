@@ -65,30 +65,32 @@ public class Player extends Entity implements KeyListener{
 
 	private int ammo = 0;
 	
-	private List<List<Collectable>> inventory = new ArrayList<>();
-	private List<Collectable> wearables = new ArrayList<>();
+	private List<Collectable> inventory = new ArrayList<>();
+	private List<Collectable> equipments = new ArrayList<>();
 	
 	public Player() {
+		/*
 		for(int i = 0; i < Main.GameProperties.InvenrotySizeY; i++) {
 			inventory.add(new ArrayList<>());
 			for(int j = 0; j < Main.GameProperties.InventorySizeX; j++)
 				inventory.get(i).add(null);
-		}
+		}*/
 		for(int i = 0; i < 7; i++)
-			wearables.add(null);
+			equipments.add(null);
 		
-		printInventory();
+		//printInventory();
 		this.setMaxLife(Main.GameProperties.PlayerMaxLife);
 		this.setLife(this.getMaxLife());
 		this.setArmor(Main.GameProperties.PlayerArmor);
 	}
-	
+	/*
 	public void printInventory() {
 		inventory.forEach(i -> System.out.println(i));
 		inventory.get(0).forEach(i -> {if(i != null) System.out.println(i.isPlaceholder()); else System.out.println("empty");});
 	}
-	
+	*/
 	public void collectItem(Collectable item) {
+		/*
 		for(int i = 0; i < inventory.size(); i++) {
 			for(int j = 0; j < inventory.get(i).size(); j++) {
 				if(inventory.get(i).get(j) == null) {
@@ -108,14 +110,14 @@ public class Player extends Entity implements KeyListener{
 			}
 		}
 		for(int i = 0; i < inventory.size(); i++) {
-			for(int j = 0; j < inventory.get(i).size(); j++) {
+			for(int j = 0; j s< inventory.get(i).size(); j++) {
 				
 			}
-		}
+		}*/
 	}
 	
 	public void consumeItem(int positionX, int positionY) {
-		inventory.get(positionX).set(positionY, null);
+		/*inventory.get(positionX).set(positionY, null);
 		for(int i = positionX; i < inventory.size(); i++) {
 			for(int j = positionY; j < inventory.get(i).size(); j++) {
 				if(inventory.get(i).get(j) != null ) {
@@ -126,7 +128,7 @@ public class Player extends Entity implements KeyListener{
 					}
 				}
 			}
-		}
+		}*/
 	}
 
 	@Override
@@ -250,7 +252,7 @@ public class Player extends Entity implements KeyListener{
 		
 		if (e.getKeyCode() == KeyEvent.VK_E) {
 			this.consumeItem(0, 0);
-			this.printInventory();
+			//this.printInventory();
 		}
 		
 		if(e.getKeyCode() == KeyEvent.VK_UP) {
