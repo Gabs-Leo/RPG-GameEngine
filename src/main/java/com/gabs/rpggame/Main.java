@@ -129,11 +129,12 @@ public class Main extends Canvas implements Runnable {
 	
 	public static void main(String args[]) {
 		try {
-			File file = new File(Thread.currentThread().getContextClassLoader().getResource("game-properties.yml").getFile());
+			//File file = new File(Thread.currentThread().getContextClassLoader().getResource("game-properties.yml").getFile());
+			File file = new File("game-properties.yml");
 			ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
 			GameProperties = mapper.readValue(file, GameProperties.class);
 		} catch (IOException e) {
-			JOptionPane.showMessageDialog(null, "Erro em Game Properties! Tente baixar o jogo novamente!");
+			JOptionPane.showMessageDialog(null, e);
 		}
 		Main main = new Main();
 		main.start();
