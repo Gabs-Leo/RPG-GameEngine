@@ -4,18 +4,16 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
-import java.util.List;
 
 import com.gabs.rpggame.Main;
 import com.gabs.rpggame.entities.collectables.Collectable;
-import com.gabs.rpggame.entities.collectables.Equipment;
 import com.gabs.rpggame.world.Camera;
 import com.gabs.rpggame.world.CollisionMask;
 import com.gabs.rpggame.world.DamageType;
 import com.gabs.rpggame.world.World;
 
 public abstract class Entity {
+
 	private int x, y, width = Main.GameProperties.TileSize, height = Main.GameProperties.TileSize;
 	private BufferedImage sprite;
 	private CollisionMask collisionMask = new CollisionMask(Main.GameProperties.TileSize, Main.GameProperties.TileSize);
@@ -46,6 +44,7 @@ public abstract class Entity {
 	public void eventTick() {
 		this.collisionMask.setX(this.getX() + this.getWidth() / 2 - this.collisionMask.getWidth() / 2);
 		this.collisionMask.setY(this.getY() + this.getHeight() / 2 - this.collisionMask.getHeight() / 2);
+
 	}
 	
 	public void heal(int value) {
@@ -62,6 +61,7 @@ public abstract class Entity {
 					case PHYSICAL_DAMAGE: {
 						int damage = World.calculatePostMitigationDamage(amount, target.getArmor());
 						target.setLife(target.getLife() - damage <= 0 ? 0 : target.getLife() - damage);
+						System.out.println("Dano: " + amount + ", vida restante: " + target.getLife());
 						break;
 					}
 					case MAGICAL_DAMAGE: {

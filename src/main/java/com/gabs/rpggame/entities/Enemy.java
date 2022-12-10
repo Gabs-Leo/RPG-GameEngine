@@ -31,6 +31,8 @@ public class Enemy extends AliveEntity {
 				downFrames = new ArrayList<>();
 	
 	public Enemy () {
+		this.setTargetable(true);
+		this.setLife(60);
 		this.setDamage(20);
 		for (int i = 0; i < 3; i++) {
 			downFrames.add(Main.spritesheet.getSprite(96 + (i) * 32, 0, Main.GameProperties.TileSize, Main.GameProperties.TileSize));
@@ -103,6 +105,11 @@ public class Enemy extends AliveEntity {
 			this.setSpeed(speed*4);
 		else
 			this.setSpeed(speed*2);
+		
+		
+		if(this.getLife() <= 0) {
+			Main.enemies.remove(this);
+		}
 		
 		super.eventTick();
 	}

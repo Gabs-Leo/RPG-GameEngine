@@ -4,13 +4,36 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.gabs.rpggame.Main;
+import com.gabs.rpggame.world.Coordinate;
+import com.gabs.rpggame.world.Direction;
+
 public class Animation {
 	private List<BufferedImage> images = new ArrayList<>();
+	private Direction direction;
+	private List<Coordinate> coordinates = new ArrayList<>();
 	
 	private int frames = 0,
 				animDelay = 0,
 				index = 0,
 				startIndex = 0;
+	
+	public Animation(int startIndex, int animDelay) {
+		coordinates.forEach(coordinate -> images.add(Main.spritesheet.getSprite(coordinate.getX(), coordinate.getY())));
+		
+		this.startIndex = startIndex;
+		this.index = startIndex;
+		this.animDelay = animDelay;
+	}
+	
+	public Animation(Direction direction, int startIndex, int index, int animDelay, List<Coordinate> coordinates) {
+		this.direction = direction;
+		this.startIndex = startIndex;
+		this.index = startIndex;
+		this.animDelay = animDelay;
+		
+		this.coordinates = coordinates;
+	};
 	
 	public Animation(int startIndex, int animDelay, BufferedImage ... images) {
 		for(BufferedImage image : images)
@@ -68,6 +91,15 @@ public class Animation {
 
 	public Animation setStartIndex(int startIndex) {
 		this.startIndex = startIndex;
+		return this;
+	}
+
+	public Direction getDirection() {
+		return direction;
+	}
+
+	public Animation setDirection(Direction direction) {
+		this.direction = direction;
 		return this;
 	}
 }

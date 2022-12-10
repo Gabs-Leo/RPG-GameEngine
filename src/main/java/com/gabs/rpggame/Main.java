@@ -16,6 +16,7 @@ import javax.swing.JOptionPane;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import com.gabs.rpggame.entities.DamageShot;
 import com.gabs.rpggame.entities.Enemy;
 import com.gabs.rpggame.entities.Entity;
 import com.gabs.rpggame.entities.Player;
@@ -24,7 +25,7 @@ import com.gabs.rpggame.graphics.UI;
 import com.gabs.rpggame.world.World;
 
 public class Main extends Canvas implements Runnable {
-	/**
+	/*
 	 * Made with <3 By Gabs
 	 */
 	private static final long serialVersionUID = 5837494021292687605L;
@@ -37,6 +38,7 @@ public class Main extends Canvas implements Runnable {
 	public static Player player;
 	public static List<Entity> entities;
 	public static List<Entity> frontEntities;
+	public static List<DamageShot> damageShots;
 	
 	public static List<Enemy> enemies;
 	public static Spritesheet spritesheet;
@@ -47,18 +49,28 @@ public class Main extends Canvas implements Runnable {
 	
 	private BufferedImage image;
 	
+	public static void main(String args[]) {
+		try {
+			//File file = new File("game-properties.yml");
+			File file = new File(Thread.currentThread().getContextClassLoader().getResource("game-properties.yml").getFile());
+			ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
+			GameProperties = mapper.readValue(file, GameProperties.class);
+		} catch (IOException e) {
+			JOptionPane.showMessageDialog(null, e);
+		}
+		Main main = new Main();
+		main.start();
+	};
+	
 	public Main() {
 		random = new Random();
-		
 		startFrame();
 		image = new BufferedImage(GameProperties.ScreenWidth, GameProperties.ScreenHeight, BufferedImage.TYPE_INT_RGB);
-		//spritesheet = new Spritesheet("/com/gabs/rpggame/images/HaloweenSpritesheet.png");
-		//world = new World("/com/gabs/rpggame/images/map.png");
 		entities = new ArrayList<Entity>();
 		frontEntities = new ArrayList<Entity>();
 		enemies = new ArrayList<Enemy>();
-		
 		spritesheet = new Spritesheet("/HaloweenSpritesheet.png");
+		damageShots = new ArrayList<>();
 		
 		ui = new UI();
 		player = new Player();
@@ -78,8 +90,11 @@ public class Main extends Canvas implements Runnable {
 		for(int i = 0; i < entities.size(); i++) {
 			entities.get(i).eventTick();
 		}
-		enemies.forEach(i -> i.eventTick());
+		for(int i = 0; i < enemies.size(); i++)
+			enemies.get(i).eventTick();
 		frontEntities.forEach(i -> i.eventTick());
+		for(int i = 0; i < damageShots.size(); i++)
+			damageShots.get(i).eventTick();
 		
 		if(Main.player.getLife() <= 0) {
 			entities = new ArrayList<Entity>();
@@ -119,6 +134,8 @@ public class Main extends Canvas implements Runnable {
 			enemies.get(i).render(g);
 		for(int i = 0; i < frontEntities.size(); i++) 
 			frontEntities.get(i).render(g);
+		for(int i = 0; i < damageShots.size(); i++) 
+			damageShots.get(i).render(g);
 		ui.render(g);
 		
 		g.dispose();
@@ -126,19 +143,6 @@ public class Main extends Canvas implements Runnable {
 		g.drawImage(image, 0, 0, GameProperties.ScreenWidth*GameProperties.ScreenScale, GameProperties.ScreenHeight*GameProperties.ScreenScale, null);
 		bs.show();
 	}
-	
-	public static void main(String args[]) {
-		try {
-			//File file = new File(Thread.currentThread().getContextClassLoader().getResource("game-properties.yml").getFile());
-			File file = new File("game-properties.yml");
-			ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
-			GameProperties = mapper.readValue(file, GameProperties.class);
-		} catch (IOException e) {
-			JOptionPane.showMessageDialog(null, e);
-		}
-		Main main = new Main();
-		main.start();
-	};
 	
 	public synchronized void start() {
 		thread = new Thread(this);

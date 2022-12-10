@@ -10,18 +10,22 @@ import com.gabs.rpggame.Main;
 import com.gabs.rpggame.entities.collectables.Collectable;
 import com.gabs.rpggame.graphics.Animation;
 import com.gabs.rpggame.world.Camera;
+import com.gabs.rpggame.world.Direction;
 import com.gabs.rpggame.world.World;
 
 public class Player extends AliveEntity implements KeyListener{
 	
 	private boolean right, left, up, down;
+	/*
 	private int rightDir = 0, 
 				leftDir = 1, 
 				upDir = 2, 
-				downDir = 3; 
+				downDir = 3; */
 	private boolean moving;
+	private boolean attacking;
 	
-	private int direction = downDir;
+	//private int direction = downDir;
+	private Direction direction;
 	private int speed;
 	
 	private Animation downAnimation = new Animation(1, 5, 
@@ -66,7 +70,7 @@ public class Player extends AliveEntity implements KeyListener{
 
 	private int ammo = 0;
 	
-	private List<Collectable> inventory = new ArrayList<>();
+	//private List<Collectable> inventory = new ArrayList<>();
 	public Player() {
 		/*
 		for(int i = 0; i < Main.GameProperties.InvenrotySizeY; i++) {
@@ -77,6 +81,8 @@ public class Player extends AliveEntity implements KeyListener{
 		
 		//printInventory();
 		super();
+		this.setDirection(Direction.DOWN);
+		this.setTargetable(false);
 		this.setMaxLife(Main.GameProperties.PlayerMaxLife);
 		this.setLife(this.getMaxLife());
 		this.setArmor(Main.GameProperties.PlayerArmor);
@@ -132,32 +138,33 @@ public class Player extends AliveEntity implements KeyListener{
 	@Override
 	public void eventTick() {
 		this.setMoving(false);
-		if(this.isRight() && World.placeFree(this.getX() + this.getSpeed(), this.getY()) && this.getX() + Main.GameProperties.TileSize <= World.WIDTH*Main.GameProperties.TileSize) {
-			this.setMoving(true);
-			if(this.isDown() ||this.isUp())
-				this.setX(this.getX() + this.getSpeed()/2);
-			else
-				this.setX(this.getX() + this.getSpeed());
-			this.setDirection(rightDir);
-			
-		}else if (this.isLeft() && World.placeFree(this.getX() - this.getSpeed(), this.getY()) && this.getX() >= 0) {
-			this.setMoving(true);
-			if(this.isDown() || this.isUp())
-				this.setX(this.getX() - this.getSpeed()/2);
-			else
-				this.setX(this.getX() - this.getSpeed());
-			this.setDirection(leftDir);
+		if(!this.isAttacking()) {
+			if(this.isRight() && World.placeFree(this.getX() + this.getSpeed(), this.getY()) && this.getX() + Main.GameProperties.TileSize <= World.WIDTH*Main.GameProperties.TileSize) {
+				this.setMoving(true);
+				if(this.isDown() ||this.isUp())
+					this.setX(this.getX() + this.getSpeed()/2);
+				else
+					this.setX(this.getX() + this.getSpeed());
+				this.setDirection(Direction.RIGHT);
+				
+			}else if (this.isLeft() && World.placeFree(this.getX() - this.getSpeed(), this.getY()) && this.getX() >= 0) {
+				this.setMoving(true);
+				if(this.isDown() || this.isUp())
+					this.setX(this.getX() - this.getSpeed()/2);
+				else
+					this.setX(this.getX() - this.getSpeed());
+				this.setDirection(Direction.LEFT);
+			}
+			if(this.isUp() && World.placeFree(this.getX(), this.getY() - this.getSpeed()) && this.getY() >= 0) {
+				this.setMoving(true);
+				this.setY(this.getY() - this.getSpeed());
+				this.setDirection(Direction.UP);
+			}else if (this.isDown() && World.placeFree(this.getX(), this.getY() + this.getSpeed())) {
+				this.setMoving(true);
+				this.setY(this.getY() + this.getSpeed());
+				this.setDirection(Direction.DOWN);
+			}
 		}
-		if(this.isUp() && World.placeFree(this.getX(), this.getY() - this.getSpeed()) && this.getY() >= 0) {
-			this.setMoving(true);
-			this.setY(this.getY() - this.getSpeed());
-			this.setDirection(upDir);
-		}else if (this.isDown() && World.placeFree(this.getX(), this.getY() + this.getSpeed())) {
-			this.setMoving(true);
-			this.setY(this.getY() + this.getSpeed());
-			this.setDirection(downDir);
-		}
-		
 		if(this.isMoving()) {
 			/*
 			frames++;
@@ -177,15 +184,6 @@ public class Player extends AliveEntity implements KeyListener{
 			damageLeftAnimation.run();
 			damageRightAnimation.run();
 		}
-		/*
-		if(GameProperties.CLAMP) {
-			Camera.setX(Camera.clamp(this.getX() - Main.GameProperties.ScreenWidth*Main.SCALE/2, 0, World.WIDTH*GameProperties.TILE_SIZE - Main.GameProperties.ScreenWidth*Main.SCALE));
-			Camera.setY(Camera.clamp(this.getY() - Main.GameProperties.ScreenHeight*Main.SCALE/2, 0, World.HEIGHT*GameProperties.TILE_SIZE - Main.GameProperties.ScreenHeight*Main.SCALE));
-		} else {
-			Camera.setX(this.getX() - Main.GameProperties.ScreenWidth*Main.SCALE/2 - 10);
-			Camera.setY(this.getY() - Main.GameProperties.ScreenHeight*Main.SCALE/2 - 10);
-		}*/
-		
 		
 		if(Main.GameProperties.Clamp) {
 			Camera.setX(Camera.clamp(this.getX() - Main.GameProperties.ScreenWidth/2, 0, World.WIDTH*Main.GameProperties.TileSize - Main.GameProperties.ScreenWidth));
@@ -195,42 +193,72 @@ public class Player extends AliveEntity implements KeyListener{
 			Camera.setY(this.getY() - Main.GameProperties.ScreenHeight/2);
 		}
 		
+		if(this.isAttacking()) {
+			this.setAttacking(false);
+			DamageShot attack = new DamageShot();
+			attack.setWidth(32)
+			  .setHeight(32);
+			attack.setDirection(direction)
+				  .setSpeed(5)
+				  .setRange(10)
+				  .setDamage(20);
+			if(this.direction == Direction.RIGHT) {
+				attack
+				  .setX(this.getX()+this.getWidth()/2)
+				  .setY(this.getY());
+			} else if(this.direction == Direction.LEFT) {
+				attack
+				  .setX(this.getX()-this.getWidth()/2)
+				  .setY(this.getY());
+			} else if(this.direction == Direction.UP) {
+				attack
+				  .setX(this.getX())
+				  .setY(this.getY()-this.getWidth()/2);
+			} else if(this.direction == Direction.DOWN) {
+				attack
+				  .setX(this.getX())
+				  .setY(this.getY()+this.getWidth()/2);
+			}
+
+			Main.damageShots.add(attack);
+		}
+		
 		super.eventTick();
 	}
 	
 	@Override
 	public void render(Graphics g) {
 		if(!this.isTakingDamage()) {
-			if(this.getDirection() == downDir) {
+			if(this.getDirection() == Direction.DOWN) {
 				g.drawImage(downAnimation.getImages().get(downAnimation.getIndex()), this.getX() - Camera.getX(), this.getY() - Camera.getY(), null);
 				if(this.getEquipments().get(4) != null)
-					g.drawImage(this.getEquipments().get(4).getEquippedAnimation().getImages().get(downAnimation.getIndex()), this.getX() - Camera.getX(), this.getY() - Camera.getY(), null);
+					g.drawImage(this.getEquipments().get(4).getAnimations().get(0).getImages().get(downAnimation.getIndex()), this.getX() - Camera.getX(), this.getY() - Camera.getY(), null);
 				//g.drawImage(downFrames.get(index), this.getX() - Camera.getX(), this.getY() - Camera.getY(), null);
-			}else if(this.getDirection() == upDir) {
+			}else if(this.getDirection() == Direction.UP) {
 				g.drawImage(upAnimation.getImages().get(upAnimation.getIndex()), this.getX() - Camera.getX(), this.getY() - Camera.getY(), null);
 				//g.drawImage(upFrames.get(index), this.getX() - Camera.getX(), this.getY() - Camera.getY(), null);
 			}
 			
-			if (this.getDirection() == rightDir) {
+			if (this.getDirection() == Direction.RIGHT) {
 				g.drawImage(rightAnimation.getImages().get(rightAnimation.getIndex()), this.getX() - Camera.getX(), this.getY() - Camera.getY(), null);
 				//g.drawImage(rightFrames.get(index), this.getX() - Camera.getX(), this.getY() - Camera.getY(), null);
-			}else if(this.getDirection() == leftDir) {
+			}else if(this.getDirection() == Direction.LEFT) {
 				g.drawImage(leftAnimation.getImages().get(leftAnimation.getIndex()), this.getX() - Camera.getX(), this.getY() - Camera.getY(), null);
 				//g.drawImage(leftFrames.get(index), this.getX() - Camera.getX(), this.getY() - Camera.getY(), null);
 			}
 		} else {
-			if(this.getDirection() == downDir) {
+			if(this.getDirection() == Direction.DOWN) {
 				g.drawImage(damageDownAnimation.getImages().get(damageDownAnimation.getIndex()), this.getX() - Camera.getX(), this.getY() - Camera.getY(), null);
 				//g.drawImage(downFrames.get(index), this.getX() - Camera.getX(), this.getY() - Camera.getY(), null);
-			}else if(this.getDirection() == upDir) {
+			}else if(this.getDirection() == Direction.UP) {
 				g.drawImage(damageUpAnimation.getImages().get(damageUpAnimation.getIndex()), this.getX() - Camera.getX(), this.getY() - Camera.getY(), null);
 				//g.drawImage(upFrames.get(index), this.getX() - Camera.getX(), this.getY() - Camera.getY(), null);
 			}
 			
-			if (this.getDirection() == rightDir) {
+			if (this.getDirection() == Direction.RIGHT) {
 				g.drawImage(damageRightAnimation.getImages().get(damageRightAnimation.getIndex()), this.getX() - Camera.getX(), this.getY() - Camera.getY(), null);
 				//g.drawImage(rightFrames.get(index), this.getX() - Camera.getX(), this.getY() - Camera.getY(), null);
-			}else if(this.getDirection() == leftDir) {
+			}else if(this.getDirection() == Direction.LEFT) {
 				g.drawImage(damageLeftAnimation.getImages().get(damageLeftAnimation.getIndex()), this.getX() - Camera.getX(), this.getY() - Camera.getY(), null);
 				//g.drawImage(leftFrames.get(index), this.getX() - Camera.getX(), this.getY() - Camera.getY(), null);
 			}
@@ -259,6 +287,10 @@ public class Player extends AliveEntity implements KeyListener{
 			this.setUp(true);
 		} else if (e.getKeyCode() == KeyEvent.VK_DOWN) {
 			this.setDown(true);
+		}
+		
+		if(e.getKeyCode() == KeyEvent.VK_Z) {
+			this.setAttacking(true);
 		}
 		
 	}
@@ -319,10 +351,10 @@ public class Player extends AliveEntity implements KeyListener{
 		this.speed = speed;
 		return this;
 	}
-	public int getDirection() {
+	public Direction getDirection() {
 		return direction;
 	}
-	public Player setDirection(int direction) {
+	public Player setDirection(Direction direction) {
 		this.direction = direction;
 		return this;
 	}
@@ -340,6 +372,13 @@ public class Player extends AliveEntity implements KeyListener{
 
 	public Player setAmmo(int ammo) {
 		this.ammo = ammo;
+		return this;
+	}
+	public boolean isAttacking() {
+		return attacking;
+	}
+	public Player setAttacking(boolean attacking) {
+		this.attacking = attacking;
 		return this;
 	}
 	

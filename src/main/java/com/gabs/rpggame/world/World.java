@@ -136,9 +136,10 @@ public class World {
 						Equipment sword = new Equipment();
 						sword
 							.setEquipmentType(EquipmentType.HANDS)
-							.setEquippedAnimation(new Animation(1, 5, Main.spritesheet.getSprite(352, 256, Main.GameProperties.TileSize, Main.GameProperties.TileSize),
-																	  Main.spritesheet.getSprite(352+32, 256, Main.GameProperties.TileSize, Main.GameProperties.TileSize),
-																	  Main.spritesheet.getSprite(352+64, 256, Main.GameProperties.TileSize, Main.GameProperties.TileSize)))
+							.getAnimations().add(new Animation(1, 5, Main.spritesheet.getSprite(352, 256, Main.GameProperties.TileSize, Main.GameProperties.TileSize),
+																	  Main.spritesheet.getSprite(384, 256, Main.GameProperties.TileSize, Main.GameProperties.TileSize),
+																	  Main.spritesheet.getSprite(416, 256, Main.GameProperties.TileSize, Main.GameProperties.TileSize)));
+						sword
 							.setSprite(Main.spritesheet.getSprite(0, 320, Main.GameProperties.TileSize, Main.GameProperties.TileSize))
 							.setX(xx * Main.GameProperties.TileSize)
 							.setY(yy * Main.GameProperties.TileSize);

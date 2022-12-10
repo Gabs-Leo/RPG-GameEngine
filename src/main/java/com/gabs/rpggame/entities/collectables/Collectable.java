@@ -4,7 +4,6 @@ import com.gabs.rpggame.Main;
 import com.gabs.rpggame.entities.Entity;
 import com.gabs.rpggame.entities.FunctionalInterface;
 
-
 public class Collectable extends Entity {
 	private FunctionalInterface method;
 	
@@ -24,6 +23,8 @@ public class Collectable extends Entity {
 		super.eventTick();
 		checkPlayerCollision();
 	}
+	
+	
 
 	public void checkPlayerCollision () {
 		if(Entity.isColliding(this, Main.player)) {

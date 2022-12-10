@@ -1,11 +1,15 @@
 package com.gabs.rpggame.entities.collectables;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.gabs.rpggame.entities.AliveEntity;
 import com.gabs.rpggame.graphics.Animation;
-
 public class Equipment extends Collectable{
 	private EquipmentType equipmentType;
-	private Animation equippedAnimation;
+	private List<Animation> animations = new ArrayList<>();
+	
+	public Equipment() {}
 	
 	public void equipTo(AliveEntity entity) {
 		switch(equipmentType) {
@@ -41,12 +45,7 @@ public class Equipment extends Collectable{
 		return this;
 	}
 
-	public Animation getEquippedAnimation() {
-		return equippedAnimation;
-	}
-
-	public Equipment setEquippedAnimation(Animation equippedAnimation) {
-		this.equippedAnimation = equippedAnimation;
-		return this;
+	public List<Animation> getAnimations() {
+		return animations;
 	}
 }
