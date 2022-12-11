@@ -8,6 +8,7 @@ import java.util.List;
 
 import com.gabs.rpggame.Main;
 import com.gabs.rpggame.world.Camera;
+import com.gabs.rpggame.world.DamageType;
 import com.gabs.rpggame.world.World;
 
 public class Enemy extends AliveEntity {
@@ -40,6 +41,12 @@ public class Enemy extends AliveEntity {
 			rightFrames.add(Main.spritesheet.getSprite(96 + (i) * 32, 64, Main.GameProperties.TileSize, Main.GameProperties.TileSize));
 			upFrames.add(Main.spritesheet.getSprite(96 + (i) * 32, 96, Main.GameProperties.TileSize, Main.GameProperties.TileSize));
 		}
+	}
+	
+	public Enemy(int life, int damage, DamageType damageType) {
+		this.setLife(20);
+		this.setDamage(damage);
+		this.setDamageType(damageType);
 	}
 	
 	@Override

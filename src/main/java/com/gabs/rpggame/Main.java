@@ -14,6 +14,7 @@ import java.util.Random;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.gabs.rpggame.entities.DamageShot;
@@ -32,6 +33,7 @@ public class Main extends Canvas implements Runnable {
 	public static JFrame frame;
 
 	public static GameProperties GameProperties;
+	public static Assets assets;
 	private Thread thread;
 	private boolean running = true;
 	
@@ -53,8 +55,17 @@ public class Main extends Canvas implements Runnable {
 		try {
 			//File file = new File("game-properties.yml");
 			File file = new File(Thread.currentThread().getContextClassLoader().getResource("game-properties.yml").getFile());
+			File file2 = new File(Thread.currentThread().getContextClassLoader().getResource("game-assets.yml").getFile());
 			ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
+			mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+			mapper.configure(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES, false);
+			
+			spritesheet = new Spritesheet("/HaloweenSpritesheet.png");
+			
 			GameProperties = mapper.readValue(file, GameProperties.class);
+			assets = mapper.readValue(file2, Assets.class);
+
+			System.out.println(assets.equipments.get(0).toString());
 		} catch (IOException e) {
 			JOptionPane.showMessageDialog(null, e);
 		}

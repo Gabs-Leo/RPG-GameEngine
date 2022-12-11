@@ -11,7 +11,6 @@ import com.gabs.rpggame.entities.Enemy;
 import com.gabs.rpggame.entities.Prop;
 import com.gabs.rpggame.entities.collectables.Collectable;
 import com.gabs.rpggame.entities.collectables.Equipment;
-import com.gabs.rpggame.entities.collectables.EquipmentType;
 import com.gabs.rpggame.graphics.Animation;
 
 public class World {
@@ -133,18 +132,14 @@ public class World {
 					}
 					//Sword
 					else if(currentTile == 0xFFfa9aff) {
-						Equipment sword = new Equipment();
+						Equipment sword = Main.assets.findEquipmentByName("sword1").get();
 						sword
-							.setEquipmentType(EquipmentType.HANDS)
 							.getAnimations().add(new Animation(1, 5, Main.spritesheet.getSprite(352, 256, Main.GameProperties.TileSize, Main.GameProperties.TileSize),
 																	  Main.spritesheet.getSprite(384, 256, Main.GameProperties.TileSize, Main.GameProperties.TileSize),
 																	  Main.spritesheet.getSprite(416, 256, Main.GameProperties.TileSize, Main.GameProperties.TileSize)));
 						sword
-							.setSprite(Main.spritesheet.getSprite(0, 320, Main.GameProperties.TileSize, Main.GameProperties.TileSize))
 							.setX(xx * Main.GameProperties.TileSize)
 							.setY(yy * Main.GameProperties.TileSize);
-						
-						
 						
 						sword.setMethod(() -> sword.equipTo(Main.player));
 						Main.entities.add(sword);

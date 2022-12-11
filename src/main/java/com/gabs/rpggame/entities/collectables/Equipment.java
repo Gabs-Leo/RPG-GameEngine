@@ -3,13 +3,35 @@ package com.gabs.rpggame.entities.collectables;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.gabs.rpggame.Main;
 import com.gabs.rpggame.entities.AliveEntity;
 import com.gabs.rpggame.graphics.Animation;
+import com.gabs.rpggame.world.DamageType;
 public class Equipment extends Collectable{
 	private EquipmentType equipmentType;
+	@JsonIgnore
 	private List<Animation> animations = new ArrayList<>();
 	
 	public Equipment() {}
+	
+	@JsonCreator
+	public Equipment(
+			@JsonProperty("name") String name,
+			@JsonProperty("equipmentType") EquipmentType equipmentType, 
+			@JsonProperty("damageType") DamageType damageType, 
+			@JsonProperty("damage") int damage, 
+			@JsonProperty("spritePositions") int[] spritePositions,
+			@JsonProperty("equippedAnimations") List<Animation> equippedAnimations) {
+		this.setName(name);
+		this.setEquipmentType(equipmentType);
+		this.setDamageType(damageType);
+		this.setDamage(damage);
+		this.setSprite(Main.spritesheet.getSprite(spritePositions[0], spritePositions[1]));
+		equippedAnimations.forEach(animation -> this.getAnimations().add(animation));
+	}
 	
 	public void equipTo(AliveEntity entity) {
 		switch(equipmentType) {
@@ -47,5 +69,13 @@ public class Equipment extends Collectable{
 
 	public List<Animation> getAnimations() {
 		return animations;
+	}
+	
+	@Override
+	public String toString() {
+		return "Equipment \n"+
+			   "[name=" + this.getName() + "] \n" +
+			   "[equipmentType=" + equipmentType + "] \n";
+			   //"[spritePositions=" + this.getSpritePositions()[0] + ", " + this.getSpritePositions()[1]+ "] \n";
 	}
 }

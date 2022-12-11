@@ -4,11 +4,16 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.gabs.rpggame.Main;
 import com.gabs.rpggame.world.Coordinate;
 import com.gabs.rpggame.world.Direction;
 
+
 public class Animation {
+	@JsonIgnore
 	private List<BufferedImage> images = new ArrayList<>();
 	private Direction direction;
 	private List<Coordinate> coordinates = new ArrayList<>();
@@ -17,6 +22,11 @@ public class Animation {
 				animDelay = 0,
 				index = 0,
 				startIndex = 0;
+	
+	@JsonCreator
+	public Animation(@JsonProperty("animation") List<List<Integer>> animation) {
+		animation.forEach(positions -> images.add(Main.spritesheet.getSprite(positions.get(0), positions.get(1))));
+	}
 	
 	public Animation(int startIndex, int animDelay) {
 		coordinates.forEach(coordinate -> images.add(Main.spritesheet.getSprite(coordinate.getX(), coordinate.getY())));

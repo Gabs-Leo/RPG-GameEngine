@@ -5,6 +5,7 @@ import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.gabs.rpggame.Main;
 import com.gabs.rpggame.entities.collectables.Collectable;
 import com.gabs.rpggame.world.Camera;
@@ -13,8 +14,9 @@ import com.gabs.rpggame.world.DamageType;
 import com.gabs.rpggame.world.World;
 
 public abstract class Entity {
-
+	private String name;
 	private int x, y, width = Main.GameProperties.TileSize, height = Main.GameProperties.TileSize;
+	@JsonIgnore
 	private BufferedImage sprite;
 	private CollisionMask collisionMask = new CollisionMask(Main.GameProperties.TileSize, Main.GameProperties.TileSize);
 	
@@ -31,13 +33,12 @@ public abstract class Entity {
 	public Entity() {
 		collisionMask.setVisible(Main.GameProperties.ShowCollisionMask);
 	}
-	public Entity(int x, int y, int width, int height, BufferedImage sprite) {
+	public Entity(int x, int y, int width, int height) {
 		super();
 		this.x = x;
 		this.y = y;
 		this.width = width;
 		this.height = height;
-		this.sprite = sprite;
 	}
 
 
@@ -212,6 +213,13 @@ public abstract class Entity {
 	}
 	public Entity setDamage(int damage) {
 		this.damage = damage;
+		return this;
+	}
+	public String getName() {
+		return name;
+	}
+	public Entity setName(String name) {
+		this.name = name;
 		return this;
 	}
 }
