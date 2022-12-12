@@ -134,10 +134,6 @@ public class World {
 					else if(currentTile == 0xFFfa9aff) {
 						Equipment sword = Main.assets.findEquipmentByName("sword1").get();
 						sword
-							.getAnimations().add(new Animation(1, 5, Main.spritesheet.getSprite(352, 256, Main.GameProperties.TileSize, Main.GameProperties.TileSize),
-																	  Main.spritesheet.getSprite(384, 256, Main.GameProperties.TileSize, Main.GameProperties.TileSize),
-																	  Main.spritesheet.getSprite(416, 256, Main.GameProperties.TileSize, Main.GameProperties.TileSize)));
-						sword
 							.setX(xx * Main.GameProperties.TileSize)
 							.setY(yy * Main.GameProperties.TileSize);
 						

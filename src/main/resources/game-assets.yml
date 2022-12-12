@@ -1,11 +1,13 @@
 equipments: 
   - 
-    name: "sword1"
+    name: "sword1" 
+    mapColor: 0xFFfa9aff
     equipmentType: HANDS
     damageType: PHYSICAL_DAMAGE
     damage: 20
     spritePositions: [0,320]
     equippedAnimations:
       - 
-        animation: []
-        
+        startIndex: 1
+        animDelay: 5
+        framePositions: [ [352,256],[384, 256],[416, 256] ]

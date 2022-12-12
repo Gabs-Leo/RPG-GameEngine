@@ -24,8 +24,11 @@ public class Animation {
 				startIndex = 0;
 	
 	@JsonCreator
-	public Animation(@JsonProperty("animation") List<List<Integer>> animation) {
-		animation.forEach(positions -> images.add(Main.spritesheet.getSprite(positions.get(0), positions.get(1))));
+	public Animation(@JsonProperty("startIndex") int startIndex, @JsonProperty("animdDelay") int animDelay, @JsonProperty("framePositions") List<List<Integer>> framePositions) {
+		this.index = startIndex;
+		this.startIndex = startIndex;
+		this.animDelay = animDelay;
+		framePositions.forEach(positions -> images.add(Main.spritesheet.getSprite(positions.get(0), positions.get(1))));
 	}
 	
 	public Animation(int startIndex, int animDelay) {
