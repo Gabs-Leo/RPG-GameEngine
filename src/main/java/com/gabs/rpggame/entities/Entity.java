@@ -15,7 +15,7 @@ import com.gabs.rpggame.world.World;
 
 public abstract class Entity {
 	private String name;
-	private int mapColor;
+	private String mapColor;
 	private int x, y, width = Main.GameProperties.TileSize, height = Main.GameProperties.TileSize;
 	@JsonIgnore
 	private BufferedImage sprite;
@@ -223,10 +223,10 @@ public abstract class Entity {
 		this.name = name;
 		return this;
 	}
-	public int getMapColor() {
+	public String getMapColor() {
 		return mapColor;
 	}
-	public Entity setMapColor(int mapColor) {
+	public Entity setMapColor(String mapColor) {
 		this.mapColor = mapColor;
 		return this;
 	}

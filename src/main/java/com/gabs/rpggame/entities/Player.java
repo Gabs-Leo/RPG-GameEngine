@@ -1,11 +1,10 @@
 package com.gabs.rpggame.entities;
 
 import java.awt.Graphics;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.gabs.rpggame.GameState;
 import com.gabs.rpggame.Main;
 import com.gabs.rpggame.entities.collectables.Collectable;
 import com.gabs.rpggame.graphics.Animation;
@@ -13,18 +12,12 @@ import com.gabs.rpggame.world.Camera;
 import com.gabs.rpggame.world.Direction;
 import com.gabs.rpggame.world.World;
 
-public class Player extends AliveEntity implements KeyListener{
+public class Player extends AliveEntity {
 	
 	private boolean right, left, up, down;
-	/*
-	private int rightDir = 0, 
-				leftDir = 1, 
-				upDir = 2, 
-				downDir = 3; */
 	private boolean moving;
 	private boolean attacking;
 	
-	//private int direction = downDir;
 	private Direction direction;
 	private int speed;
 	
@@ -69,30 +62,20 @@ public class Player extends AliveEntity implements KeyListener{
 			Main.spritesheet.getSprite(64+256, 96+256, 32, 32));
 
 	private int ammo = 0;
+	private List<Collectable> inventory = new ArrayList<>();
 	
-	//private List<Collectable> inventory = new ArrayList<>();
 	public Player() {
-		/*
-		for(int i = 0; i < Main.GameProperties.InvenrotySizeY; i++) {
-			inventory.add(new ArrayList<>());
-			for(int j = 0; j < Main.GameProperties.InventorySizeX; j++)
-				inventory.get(i).add(null);
-		}*/
-		
-		//printInventory();
 		super();
+		for(int i = 0; i < Main.GameProperties.InventorySizeX * Main.GameProperties.InventorySizeY; i++)
+			inventory.add(null);
+		
 		this.setDirection(Direction.DOWN);
-		this.setTargetable(false);
+		this.setTargetable(true);
 		this.setMaxLife(Main.GameProperties.PlayerMaxLife);
 		this.setLife(this.getMaxLife());
 		this.setArmor(Main.GameProperties.PlayerArmor);
 	}
-	/*
-	public void printInventory() {
-		inventory.forEach(i -> System.out.println(i));
-		inventory.get(0).forEach(i -> {if(i != null) System.out.println(i.isPlaceholder()); else System.out.println("empty");});
-	}
-	*/
+
 	public void collectItem(Collectable item) {
 		/*
 		for(int i = 0; i < inventory.size(); i++) {
@@ -166,18 +149,10 @@ public class Player extends AliveEntity implements KeyListener{
 			}
 		}
 		if(this.isMoving()) {
-			/*
-			frames++;
-			if(frames == animDelay) {
-				frames = 0;
-				index++;
-				if(index > rightFrames.size()-1)
-					index = 0;
-			}*/
-			downAnimation.run();
-			upAnimation.run();
-			leftAnimation.run();
-			rightAnimation.run();
+			getDownAnimation().run();
+			getUpAnimation().run();
+			getLeftAnimation().run();
+			getRightAnimation().run();
 			
 			damageDownAnimation.run();
 			damageUpAnimation.run();
@@ -223,6 +198,10 @@ public class Player extends AliveEntity implements KeyListener{
 			Main.damageShots.add(attack);
 		}
 		
+		if(this.getLife() <= 0) {
+			Main.state = GameState.GAME_OVER;
+		}
+		
 		super.eventTick();
 	}
 	
@@ -230,90 +209,32 @@ public class Player extends AliveEntity implements KeyListener{
 	public void render(Graphics g) {
 		if(!this.isTakingDamage()) {
 			if(this.getDirection() == Direction.DOWN) {
-				g.drawImage(downAnimation.getImages().get(downAnimation.getIndex()), this.getX() - Camera.getX(), this.getY() - Camera.getY(), null);
+				g.drawImage(getDownAnimation().getImages().get(getDownAnimation().getIndex()), this.getX() - Camera.getX(), this.getY() - Camera.getY(), null);
 				if(this.getEquipments().get(4) != null)
-					g.drawImage(this.getEquipments().get(4).getAnimations().get(0).getImages().get(downAnimation.getIndex()), this.getX() - Camera.getX(), this.getY() - Camera.getY(), null);
-				//g.drawImage(downFrames.get(index), this.getX() - Camera.getX(), this.getY() - Camera.getY(), null);
+					g.drawImage(this.getEquipments().get(4).getAnimations().get(0).getImages().get(getDownAnimation().getIndex()), this.getX() - Camera.getX(), this.getY() - Camera.getY(), null);
 			}else if(this.getDirection() == Direction.UP) {
-				g.drawImage(upAnimation.getImages().get(upAnimation.getIndex()), this.getX() - Camera.getX(), this.getY() - Camera.getY(), null);
-				//g.drawImage(upFrames.get(index), this.getX() - Camera.getX(), this.getY() - Camera.getY(), null);
+				g.drawImage(getUpAnimation().getImages().get(getUpAnimation().getIndex()), this.getX() - Camera.getX(), this.getY() - Camera.getY(), null);
 			}
 			
 			if (this.getDirection() == Direction.RIGHT) {
-				g.drawImage(rightAnimation.getImages().get(rightAnimation.getIndex()), this.getX() - Camera.getX(), this.getY() - Camera.getY(), null);
-				//g.drawImage(rightFrames.get(index), this.getX() - Camera.getX(), this.getY() - Camera.getY(), null);
+				g.drawImage(getRightAnimation().getImages().get(getRightAnimation().getIndex()), this.getX() - Camera.getX(), this.getY() - Camera.getY(), null);
 			}else if(this.getDirection() == Direction.LEFT) {
-				g.drawImage(leftAnimation.getImages().get(leftAnimation.getIndex()), this.getX() - Camera.getX(), this.getY() - Camera.getY(), null);
-				//g.drawImage(leftFrames.get(index), this.getX() - Camera.getX(), this.getY() - Camera.getY(), null);
+				g.drawImage(getLeftAnimation().getImages().get(getLeftAnimation().getIndex()), this.getX() - Camera.getX(), this.getY() - Camera.getY(), null);
 			}
 		} else {
 			if(this.getDirection() == Direction.DOWN) {
 				g.drawImage(damageDownAnimation.getImages().get(damageDownAnimation.getIndex()), this.getX() - Camera.getX(), this.getY() - Camera.getY(), null);
-				//g.drawImage(downFrames.get(index), this.getX() - Camera.getX(), this.getY() - Camera.getY(), null);
 			}else if(this.getDirection() == Direction.UP) {
 				g.drawImage(damageUpAnimation.getImages().get(damageUpAnimation.getIndex()), this.getX() - Camera.getX(), this.getY() - Camera.getY(), null);
-				//g.drawImage(upFrames.get(index), this.getX() - Camera.getX(), this.getY() - Camera.getY(), null);
 			}
 			
 			if (this.getDirection() == Direction.RIGHT) {
 				g.drawImage(damageRightAnimation.getImages().get(damageRightAnimation.getIndex()), this.getX() - Camera.getX(), this.getY() - Camera.getY(), null);
-				//g.drawImage(rightFrames.get(index), this.getX() - Camera.getX(), this.getY() - Camera.getY(), null);
 			}else if(this.getDirection() == Direction.LEFT) {
 				g.drawImage(damageLeftAnimation.getImages().get(damageLeftAnimation.getIndex()), this.getX() - Camera.getX(), this.getY() - Camera.getY(), null);
-				//g.drawImage(leftFrames.get(index), this.getX() - Camera.getX(), this.getY() - Camera.getY(), null);
 			}
 		}
 		super.render(g);
-	}
-	
-	@Override
-	public void keyTyped(KeyEvent e) {
-		
-	}
-	@Override
-	public void keyPressed(KeyEvent e) {
-		if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
-			this.setRight(true);
-		} else if (e.getKeyCode() == KeyEvent.VK_LEFT) {
-			this.setLeft(true);
-		}
-		
-		if (e.getKeyCode() == KeyEvent.VK_E) {
-			this.consumeItem(0, 0);
-			//this.printInventory();
-		}
-		
-		if(e.getKeyCode() == KeyEvent.VK_UP) {
-			this.setUp(true);
-		} else if (e.getKeyCode() == KeyEvent.VK_DOWN) {
-			this.setDown(true);
-		}
-		
-		if(e.getKeyCode() == KeyEvent.VK_Z) {
-			this.setAttacking(true);
-		}
-		
-	}
-	@Override
-	public void keyReleased(KeyEvent e) {
-		if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
-			this.setRight(false);
-			this.rightAnimation.setIndex(this.rightAnimation.getStartIndex());
-
-		} else if (e.getKeyCode() == KeyEvent.VK_LEFT) {
-			this.setLeft(false);
-			this.leftAnimation.setIndex(this.leftAnimation.getStartIndex());
-		}
-		
-		if(e.getKeyCode() == KeyEvent.VK_UP) {
-			this.setUp(false);
-			this.upAnimation.setIndex(this.upAnimation.getStartIndex());
-
-		} else if (e.getKeyCode() == KeyEvent.VK_DOWN) {
-			this.setDown(false);
-			this.downAnimation.setIndex(this.downAnimation.getStartIndex());
-		}
-		
 	}
 	
 	public boolean isRight() {
@@ -381,5 +302,20 @@ public class Player extends AliveEntity implements KeyListener{
 		this.attacking = attacking;
 		return this;
 	}
-	
+
+	public Animation getDownAnimation() {
+		return downAnimation;
+	}
+
+	public Animation getUpAnimation() {
+		return upAnimation;
+	}
+
+	public Animation getLeftAnimation() {
+		return leftAnimation;
+	}
+
+	public Animation getRightAnimation() {
+		return rightAnimation;
+	}
 }

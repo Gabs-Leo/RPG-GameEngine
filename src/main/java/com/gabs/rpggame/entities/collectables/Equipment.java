@@ -20,12 +20,14 @@ public class Equipment extends Collectable{
 	@JsonCreator
 	public Equipment(
 			@JsonProperty("name") String name,
+			@JsonProperty("mapColor") String mapColor,
 			@JsonProperty("equipmentType") EquipmentType equipmentType, 
 			@JsonProperty("damageType") DamageType damageType, 
 			@JsonProperty("damage") int damage, 
 			@JsonProperty("spritePositions") int[] spritePositions,
 			@JsonProperty("equippedAnimations") List<Animation> equippedAnimations) {
 		this.setName(name);
+		this.setMapColor(mapColor);
 		this.setEquipmentType(equipmentType);
 		this.setDamageType(damageType);
 		this.setDamage(damage);

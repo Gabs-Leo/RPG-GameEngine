@@ -4,8 +4,11 @@ import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +17,14 @@ import java.util.Random;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.FormulaEvaluator;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
@@ -21,11 +32,13 @@ import com.gabs.rpggame.entities.DamageShot;
 import com.gabs.rpggame.entities.Enemy;
 import com.gabs.rpggame.entities.Entity;
 import com.gabs.rpggame.entities.Player;
+import com.gabs.rpggame.graphics.GameOverScreen;
+import com.gabs.rpggame.graphics.PauseScreen;
 import com.gabs.rpggame.graphics.Spritesheet;
 import com.gabs.rpggame.graphics.UI;
 import com.gabs.rpggame.world.World;
 
-public class Main extends Canvas implements Runnable {
+public class Main extends Canvas implements Runnable, KeyListener {
 	/*
 	 * Made with <3 By Gabs
 	 */
@@ -48,8 +61,12 @@ public class Main extends Canvas implements Runnable {
 	
 	public static Random random;
 	public UI ui;
+	public GameOverScreen gameOver = new GameOverScreen();
+	public PauseScreen pauseScreen = new PauseScreen();
 	
 	private BufferedImage image;
+	
+	public static GameState state;
 	
 	public static void main(String args[]) {
 		try {
@@ -64,8 +81,16 @@ public class Main extends Canvas implements Runnable {
 			
 			GameProperties = mapper.readValue(file, GameProperties.class);
 			assets = mapper.readValue(file2, Assets.class);
-
-			System.out.println(assets.equipments.get(0).toString());
+			
+			FileInputStream fis = new FileInputStream(Thread.currentThread().getContextClassLoader().getResource("TestDialogue.xlsx").getFile());
+			XSSFWorkbook wb = new XSSFWorkbook(fis);
+			XSSFSheet sheet = wb.getSheetAt(0);
+			//FormulaEvaluator formulaEvaluator = wb.getCreationHelper().createFormulaEvaluator();  
+			for(Row row: sheet) {     //iteration over row using for each loop
+				for(Cell cell: row) {    //iteration over cell using for each loop  
+					
+				}
+			}
 		} catch (IOException e) {
 			JOptionPane.showMessageDialog(null, e);
 		}
@@ -91,44 +116,37 @@ public class Main extends Canvas implements Runnable {
 			.setSprite(spritesheet.getSprite(0, 0, GameProperties.TileSize, GameProperties.TileSize));
 		player
 			.setSpeed(4);
-		addKeyListener(player);
+		addKeyListener(this);
 		
 		world = new World("/map.png");
 		entities.add(player);
+		
+		state = GameState.RUNNING;
 	};
 	
 	public void eventTick() {
-		for(int i = 0; i < entities.size(); i++) {
-			entities.get(i).eventTick();
-		}
-		for(int i = 0; i < enemies.size(); i++)
-			enemies.get(i).eventTick();
-		frontEntities.forEach(i -> i.eventTick());
-		for(int i = 0; i < damageShots.size(); i++)
-			damageShots.get(i).eventTick();
-		
-		if(Main.player.getLife() <= 0) {
-			entities = new ArrayList<Entity>();
-			frontEntities = new ArrayList<Entity>();
-			enemies = new ArrayList<Enemy>();
+		switch(state) {
+		case RUNNING:{
+				for(int i = 0; i < entities.size(); i++) {
+					entities.get(i).eventTick();
+				}
+				for(int i = 0; i < enemies.size(); i++)
+					enemies.get(i).eventTick();
+				frontEntities.forEach(i -> i.eventTick());
+				for(int i = 0; i < damageShots.size(); i++)
+					damageShots.get(i).eventTick();
+			}
+			break;
+		case PAUSED:
 			
-			spritesheet = new Spritesheet("/HaloweenSpritesheet.png");
-			world = new World("/map.png");
-			ui = new UI();
-			player = new Player();
-			player
-				.setWidth(GameProperties.TileSize)
-				.setHeight(GameProperties.TileSize)
-				.setSprite(spritesheet.getSprite(0, 0, GameProperties.TileSize, GameProperties.TileSize));
-			player
-				.setSpeed(4);
-			addKeyListener(player);
-
-			entities.add(player);
+			break;
+		case GAME_OVER:
+			break;
 		}
 	}
 	
 	public void render() {
+		
 		var bs = this.getBufferStrategy();
 		if(bs == null) {
 			this.createBufferStrategy(3);
@@ -148,6 +166,16 @@ public class Main extends Canvas implements Runnable {
 		for(int i = 0; i < damageShots.size(); i++) 
 			damageShots.get(i).render(g);
 		ui.render(g);
+		switch(state) {
+		case RUNNING:
+			break;
+		case PAUSED:
+			pauseScreen.render(g);
+			break;
+		case GAME_OVER:
+			gameOver.render(g);
+			break;
+		}
 		
 		g.dispose();
 		g = bs.getDrawGraphics();
@@ -182,7 +210,7 @@ public class Main extends Canvas implements Runnable {
 		double timer = System.currentTimeMillis();
 		requestFocus();
 		
-		int targetableCounter = 0;
+
 		while(running) {
 			long now = System.nanoTime();
 			delta += (now - lastTime) / nanoSeconds;
@@ -195,7 +223,16 @@ public class Main extends Canvas implements Runnable {
 				delta--;
 			}
 			if(System.currentTimeMillis() - timer >= 1000) {
-				//System.out.println("FPS: " + frames);
+				frames = 0;
+				timer += 1000;
+			}
+		}
+		stop();
+	};
+	
+	
+	/*
+	 * 				//System.out.println("FPS: " + frames);
 				if(Main.player.isTakingDamage()) {
 					targetableCounter += 1;
 					System.out.println(targetableCounter);
@@ -204,13 +241,7 @@ public class Main extends Canvas implements Runnable {
 						Main.player.setTakingDamage(false);
 					}
 				}
-				frames = 0;
-				timer += 1000;
-			}
-		}
-		stop();
-	};
-	
+	 * */
 	public void startFrame() {		
 		this.setPreferredSize(new Dimension(GameProperties.ScreenWidth*GameProperties.ScreenScale, GameProperties.ScreenHeight*GameProperties.ScreenScale));
 		frame = new JFrame("Game #1");
@@ -220,5 +251,72 @@ public class Main extends Canvas implements Runnable {
 		frame.setLocationRelativeTo(null);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setVisible(true);
-	};
+	}
+
+	@Override
+	public void keyTyped(KeyEvent e) {
+		
+	}
+	@Override
+	public void keyPressed(KeyEvent e) {
+		if(state == GameState.PAUSED && e.getKeyCode() == KeyEvent.VK_DOWN) {
+			if(pauseScreen.getOption() == 2)
+				pauseScreen.setOption(0);
+			else
+				pauseScreen.setOption(pauseScreen.getOption()+1);
+		} else if(state == GameState.PAUSED && e.getKeyCode() == KeyEvent.VK_UP) {
+			if(pauseScreen.getOption() == 0)
+				pauseScreen.setOption(2);
+			else
+				pauseScreen.setOption(pauseScreen.getOption()-1);
+		}
+		if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
+			player.setRight(true);
+		} else if (e.getKeyCode() == KeyEvent.VK_LEFT) {
+			player.setLeft(true);
+		}
+		
+		if(e.getKeyCode() == KeyEvent.VK_UP) {
+			player.setUp(true);
+		} else if (e.getKeyCode() == KeyEvent.VK_DOWN) {
+			player.setDown(true);
+		}
+		
+		if(e.getKeyCode() == KeyEvent.VK_Z) {
+			player.setAttacking(true);
+		}
+		
+		if(e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+			if(state == GameState.PAUSED)
+				state = GameState.RUNNING;
+			else
+				state = GameState.PAUSED;
+		}
+		
+		if(e.getKeyCode() == KeyEvent.VK_E) {
+			Main.world = new World("/map2.png");
+		}
+		
+	}
+	@Override
+	public void keyReleased(KeyEvent e) {
+		if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
+			player.setRight(false);
+			player.getRightAnimation().setIndex(player.getRightAnimation().getStartIndex());
+
+		} else if (e.getKeyCode() == KeyEvent.VK_LEFT) {
+			player.setLeft(false);
+			player.getLeftAnimation().setIndex(player.getLeftAnimation().getStartIndex());
+		}
+		
+		if(e.getKeyCode() == KeyEvent.VK_UP) {
+			player.setUp(false);
+			player.getUpAnimation().setIndex(player.getUpAnimation().getStartIndex());
+
+		} else if (e.getKeyCode() == KeyEvent.VK_DOWN) {
+			player.setDown(false);
+			player.getDownAnimation().setIndex(player.getDownAnimation().getStartIndex());
+		}
+		
+	}
 }

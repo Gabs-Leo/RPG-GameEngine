@@ -14,5 +14,5 @@ public class GameProperties {
 	public int PlayerArmor;
 	public int PlayerMagicalResistance;
 	public int InventorySizeX;
-	public int InvenrotySizeY;
+	public int InventorySizeY;
 }

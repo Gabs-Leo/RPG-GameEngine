@@ -1,7 +1,7 @@
 equipments: 
   - 
     name: "sword1" 
-    mapColor: 0xFFfa9aff
+    mapColor: "0xFFfa9aff"
     equipmentType: HANDS
     damageType: PHYSICAL_DAMAGE
     damage: 20
@@ -10,4 +10,4 @@ equipments:
       - 
         startIndex: 1
         animDelay: 5
-        framePositions: [ [352,256],[384, 256],[416, 256] ]
+        framePositions: [ [352, 256], [384, 256], [416, 256], ]
