@@ -1,5 +1,5 @@
 package com.gabs.rpggame;
 
 public enum GameState {
-	RUNNING, PAUSED, GAME_OVER
+	MAIN_MENU, RUNNING, PAUSED, GAME_OVER
 }

@@ -30,10 +30,12 @@ import com.gabs.rpggame.entities.Enemy;
 import com.gabs.rpggame.entities.Entity;
 import com.gabs.rpggame.entities.Player;
 import com.gabs.rpggame.graphics.GameOverScreen;
+import com.gabs.rpggame.graphics.MainMenu;
 import com.gabs.rpggame.graphics.PauseScreen;
 import com.gabs.rpggame.graphics.Spritesheet;
 import com.gabs.rpggame.graphics.Transition;
 import com.gabs.rpggame.graphics.UI;
+import com.gabs.rpggame.world.Direction;
 import com.gabs.rpggame.world.World;
 
 public class Main extends Canvas implements Runnable, KeyListener {
@@ -62,6 +64,7 @@ public class Main extends Canvas implements Runnable, KeyListener {
 	public GameOverScreen gameOver = new GameOverScreen();
 	public PauseScreen pauseScreen = new PauseScreen();
 	public Transition transition = new Transition();
+	public MainMenu mainMenu = new MainMenu();
 	
 	private BufferedImage image;
 	
@@ -120,7 +123,7 @@ public class Main extends Canvas implements Runnable, KeyListener {
 		world = new World("/bedroom.png");
 		entities.add(player);
 		
-		state = GameState.RUNNING;
+		state = GameState.MAIN_MENU;
 	};
 	
 	public void eventTick() {
@@ -137,9 +140,13 @@ public class Main extends Canvas implements Runnable, KeyListener {
 			}
 			break;
 		case PAUSED:
-			
 			break;
 		case GAME_OVER:
+			break;
+		case MAIN_MENU:
+			
+			break;
+		default:
 			break;
 		}
 	}
@@ -165,15 +172,20 @@ public class Main extends Canvas implements Runnable, KeyListener {
 		for(int i = 0; i < damageShots.size(); i++) 
 			damageShots.get(i).render(g);
 		//ui.render(g);
-		transition.render(g);
+		//transition.render(g);
 		switch(state) {
 			case RUNNING:
 				break;
 			case PAUSED:
-				//pauseScreen.render(g);
+				pauseScreen.render(g);
 				break;
 			case GAME_OVER:
 				gameOver.render(g);
+				break;
+			case MAIN_MENU:
+				mainMenu.render(g);
+				break;
+			default:
 				break;
 		}
 		
@@ -259,17 +271,19 @@ public class Main extends Canvas implements Runnable, KeyListener {
 	}
 	@Override
 	public void keyPressed(KeyEvent e) {
-		if(state == GameState.PAUSED && e.getKeyCode() == KeyEvent.VK_DOWN) {
-			if(pauseScreen.getOption() == 2)
-				pauseScreen.setOption(0);
-			else
-				pauseScreen.setOption(pauseScreen.getOption()+1);
-		} else if(state == GameState.PAUSED && e.getKeyCode() == KeyEvent.VK_UP) {
-			if(pauseScreen.getOption() == 0)
-				pauseScreen.setOption(2);
-			else
-				pauseScreen.setOption(pauseScreen.getOption()-1);
-		}
+		//Pause Menu
+		if(state == GameState.PAUSED && e.getKeyCode() == KeyEvent.VK_DOWN)
+			pauseScreen.changeOption(Direction.DOWN);
+		else if(state == GameState.PAUSED && e.getKeyCode() == KeyEvent.VK_UP)
+			pauseScreen.changeOption(Direction.UP);
+		
+		//Main Menu
+		if(state == GameState.MAIN_MENU && e.getKeyCode() == KeyEvent.VK_DOWN)
+			mainMenu.changeOption(Direction.DOWN);
+		else if(state == GameState.MAIN_MENU && e.getKeyCode() == KeyEvent.VK_UP)
+			mainMenu.changeOption(Direction.UP);
+		
+		//Player Movement
 		if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
 			player.setRight(true);
 		} else if (e.getKeyCode() == KeyEvent.VK_LEFT) {
@@ -290,7 +304,7 @@ public class Main extends Canvas implements Runnable, KeyListener {
 			if(state == GameState.PAUSED) {
 				transition.endTransition();
 				state = GameState.RUNNING;
-			} else {
+			} else if (state == GameState.RUNNING){
 				transition.startTransition();
 				state = GameState.PAUSED;
 			}

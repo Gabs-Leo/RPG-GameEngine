@@ -6,8 +6,6 @@ import java.awt.Graphics;
 import com.gabs.rpggame.Main;
 
 public class Transition {
-	
-	private TransitionType type;
 	private boolean done = true;
 	private float opacity = 0;
 	
@@ -33,13 +31,11 @@ public class Transition {
 	public void startTransition() {
 		opacity = 0f;
 		setDone(false);
-		type = TransitionType.FADE_IN;
 	}
 	
 	public void endTransition() {
 		opacity = 1f;
 		setDone(true);
-		type = TransitionType.FADE_OUT;
 	}
 
 	public boolean isDone() {
@@ -50,10 +46,4 @@ public class Transition {
 		this.done = done;
 		return this;
 	}
-}
-
-
-
-enum TransitionType {
-	FADE_IN, FADE_OUT
 }

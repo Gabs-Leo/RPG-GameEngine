@@ -5,6 +5,7 @@ import java.awt.Font;
 import java.awt.Graphics;
 
 import com.gabs.rpggame.Main;
+import com.gabs.rpggame.world.Direction;
 
 public class PauseScreen {
 	
@@ -42,6 +43,19 @@ public class PauseScreen {
 				g.setFont(new Font("Courier New", Font.BOLD, 40));
 				g.drawString("Exit", 250, 220);
 				break;		
+		}
+	}
+	
+	public void changeOption( Direction direction ) {
+		switch(direction) {
+		case DOWN:
+			option = option == 2 ? 0 : option+1;
+			break;
+		case UP:
+			option = option == 0 ? 2 : option-1;
+			break;
+		default:
+			break;
 		}
 	}
 
