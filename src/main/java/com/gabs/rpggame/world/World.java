@@ -11,7 +11,6 @@ import com.gabs.rpggame.entities.Enemy;
 import com.gabs.rpggame.entities.Prop;
 import com.gabs.rpggame.entities.collectables.Collectable;
 import com.gabs.rpggame.entities.collectables.Equipment;
-import com.gabs.rpggame.graphics.Animation;
 
 public class World {
 	
@@ -42,14 +41,28 @@ public class World {
 					tile.setX(xx * Main.GameProperties.TileSize)
 						.setY(yy * Main.GameProperties.TileSize)
 						.setType(CollisionType.NO_COLLISION)
-						.setSprite(Main.spritesheet.getSprite(0, 128, Main.GameProperties.TileSize, Main.GameProperties.TileSize));
-					
+						.setSprite(Main.spritesheet.getSprite(96, 64, Main.GameProperties.TileSize, Main.GameProperties.TileSize));
+					if(currentTile == 0xFF303030) {
+						tile.setType(CollisionType.BLOCK)
+							.setSprite(Main.spritesheet.getSprite(96, 32, Main.GameProperties.TileSize, Main.GameProperties.TileSize));	
+					} else if(currentTile == 0xFF000000) {
+						tile.setType(CollisionType.BLOCK)
+							.setSprite(Main.spritesheet.getSprite(0, 0, 1, 1));
+					} else if(currentTile == 0xFF353535) {
+						tile.setType(CollisionType.BLOCK)
+							.setSprite(Main.spritesheet.getSprite(96, 0, Main.GameProperties.TileSize, Main.GameProperties.TileSize));
+					} 
 					if (currentTile == 0xFFFF0000) {
 						tile.setX(xx * Main.GameProperties.TileSize)
 							.setY(yy * Main.GameProperties.TileSize)
 							.setType(CollisionType.NO_COLLISION)
 							.setSprite(Main.spritesheet.getSprite(0, 288, Main.GameProperties.TileSize, Main.GameProperties.TileSize));
-					} else if (currentTile == 0xFFFF00FF) {
+					} else if(currentTile == 0xFFDD36E5) {
+						System.out.println("player!");
+						Main.player.setX(xx*Main.GameProperties.TileSize);
+						Main.player.setY(yy*Main.GameProperties.TileSize);
+					}
+					else if (currentTile == 0xFFFF00FF) {
 						Collectable prop = new Collectable();
 						prop
 							.setSprite(Main.spritesheet.getSprite(544, 64, Main.GameProperties.TileSize, Main.GameProperties.TileSize))
@@ -143,8 +156,6 @@ public class World {
 					tiles[xx + (yy * WIDTH)] = tile;
 				}
 			}
-			Main.player.setX(64);
-			Main.player.setY(64);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -178,17 +189,20 @@ public class World {
 	}
 	
 	public static boolean placeFree(int nextX, int nextY) {
-		int x1 = nextX / Main.GameProperties.TileSize;
-		int y1 = nextY / Main.GameProperties.TileSize;
+		int x = Main.player.getWidth();
+		int y = Main.player.getHeight();
 		
-		int x2 = (nextX + Main.GameProperties.TileSize - 1) / Main.GameProperties.TileSize;
-		int y2 = nextY / Main.GameProperties.TileSize;
+		int x1 = nextX / x;
+		int y1 = nextY / y;
 		
-		int x3 = nextX / Main.GameProperties.TileSize;
-		int y3 = (nextY + Main.GameProperties.TileSize - 1) / Main.GameProperties.TileSize;
+		int x2 = (nextX + x - 1) / x;
+		int y2 = nextY / y;
 		
-		int x4 = (nextX + Main.GameProperties.TileSize - 1) / Main.GameProperties.TileSize;
-		int y4 = (nextY + Main.GameProperties.TileSize - 1) / Main.GameProperties.TileSize;
+		int x3 = nextX / x;
+		int y3 = (nextY + y - 1) / y;
+		
+		int x4 = (nextX + x - 1) / x;
+		int y4 = (nextY + y - 1) / y;
 		
 		try {
 			return 	tiles[x1 + y1*World.WIDTH].getType() == CollisionType.NO_COLLISION &&

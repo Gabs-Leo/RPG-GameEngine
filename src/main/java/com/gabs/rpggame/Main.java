@@ -17,10 +17,7 @@ import java.util.Random;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
-import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.FormulaEvaluator;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -35,6 +32,7 @@ import com.gabs.rpggame.entities.Player;
 import com.gabs.rpggame.graphics.GameOverScreen;
 import com.gabs.rpggame.graphics.PauseScreen;
 import com.gabs.rpggame.graphics.Spritesheet;
+import com.gabs.rpggame.graphics.Transition;
 import com.gabs.rpggame.graphics.UI;
 import com.gabs.rpggame.world.World;
 
@@ -63,6 +61,7 @@ public class Main extends Canvas implements Runnable, KeyListener {
 	public UI ui;
 	public GameOverScreen gameOver = new GameOverScreen();
 	public PauseScreen pauseScreen = new PauseScreen();
+	public Transition transition = new Transition();
 	
 	private BufferedImage image;
 	
@@ -72,15 +71,15 @@ public class Main extends Canvas implements Runnable, KeyListener {
 		try {
 			//File file = new File("game-properties.yml");
 			File file = new File(Thread.currentThread().getContextClassLoader().getResource("game-properties.yml").getFile());
-			File file2 = new File(Thread.currentThread().getContextClassLoader().getResource("game-assets.yml").getFile());
+			//File file2 = new File(Thread.currentThread().getContextClassLoader().getResource("game-assets.yml").getFile());
 			ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
 			mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 			mapper.configure(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES, false);
 			
-			spritesheet = new Spritesheet("/HaloweenSpritesheet.png");
+			spritesheet = new Spritesheet("/dark_spritesheet.png");
 			
 			GameProperties = mapper.readValue(file, GameProperties.class);
-			assets = mapper.readValue(file2, Assets.class);
+			//assets = mapper.readValue(file2, Assets.class);
 			
 			FileInputStream fis = new FileInputStream(Thread.currentThread().getContextClassLoader().getResource("TestDialogue.xlsx").getFile());
 			XSSFWorkbook wb = new XSSFWorkbook(fis);
@@ -88,7 +87,7 @@ public class Main extends Canvas implements Runnable, KeyListener {
 			//FormulaEvaluator formulaEvaluator = wb.getCreationHelper().createFormulaEvaluator();  
 			for(Row row: sheet) {     //iteration over row using for each loop
 				for(Cell cell: row) {    //iteration over cell using for each loop  
-					
+					System.out.println(cell.getStringCellValue());
 				}
 			}
 		} catch (IOException e) {
@@ -105,7 +104,7 @@ public class Main extends Canvas implements Runnable, KeyListener {
 		entities = new ArrayList<Entity>();
 		frontEntities = new ArrayList<Entity>();
 		enemies = new ArrayList<Enemy>();
-		spritesheet = new Spritesheet("/HaloweenSpritesheet.png");
+		spritesheet = new Spritesheet("/dark.png");
 		damageShots = new ArrayList<>();
 		
 		ui = new UI();
@@ -118,7 +117,7 @@ public class Main extends Canvas implements Runnable, KeyListener {
 			.setSpeed(4);
 		addKeyListener(this);
 		
-		world = new World("/map.png");
+		world = new World("/bedroom.png");
 		entities.add(player);
 		
 		state = GameState.RUNNING;
@@ -165,16 +164,17 @@ public class Main extends Canvas implements Runnable, KeyListener {
 			frontEntities.get(i).render(g);
 		for(int i = 0; i < damageShots.size(); i++) 
 			damageShots.get(i).render(g);
-		ui.render(g);
+		//ui.render(g);
+		transition.render(g);
 		switch(state) {
-		case RUNNING:
-			break;
-		case PAUSED:
-			pauseScreen.render(g);
-			break;
-		case GAME_OVER:
-			gameOver.render(g);
-			break;
+			case RUNNING:
+				break;
+			case PAUSED:
+				//pauseScreen.render(g);
+				break;
+			case GAME_OVER:
+				gameOver.render(g);
+				break;
 		}
 		
 		g.dispose();
@@ -283,14 +283,17 @@ public class Main extends Canvas implements Runnable, KeyListener {
 		}
 		
 		if(e.getKeyCode() == KeyEvent.VK_Z) {
-			player.setAttacking(true);
+			//player.setAttacking(true);
 		}
 		
 		if(e.getKeyCode() == KeyEvent.VK_ESCAPE) {
-			if(state == GameState.PAUSED)
+			if(state == GameState.PAUSED) {
+				transition.endTransition();
 				state = GameState.RUNNING;
-			else
+			} else {
+				transition.startTransition();
 				state = GameState.PAUSED;
+			}
 		}
 		
 		if(e.getKeyCode() == KeyEvent.VK_E) {
