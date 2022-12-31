@@ -58,9 +58,10 @@ public class World {
 							.setType(CollisionType.NO_COLLISION)
 							.setSprite(Main.spritesheet.getSprite(0, 288, Main.GameProperties.TileSize, Main.GameProperties.TileSize));
 					} else if(currentTile == 0xFFDD36E5) {
-						System.out.println("player!");
 						Main.player.setX(xx*Main.GameProperties.TileSize);
 						Main.player.setY(yy*Main.GameProperties.TileSize);
+						Main.eventTriggers.add(new EventTrigger().setAction(() -> System.out.println("xd")).setX(xx).setY(yy));
+						
 					}
 					else if (currentTile == 0xFFFF00FF) {
 						Collectable prop = new Collectable();

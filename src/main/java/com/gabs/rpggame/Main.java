@@ -6,6 +6,7 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
@@ -34,8 +35,9 @@ import com.gabs.rpggame.graphics.MainMenu;
 import com.gabs.rpggame.graphics.PauseScreen;
 import com.gabs.rpggame.graphics.Spritesheet;
 import com.gabs.rpggame.graphics.Transition;
-import com.gabs.rpggame.graphics.UI;
+import com.gabs.rpggame.graphics.HUD;
 import com.gabs.rpggame.world.Direction;
+import com.gabs.rpggame.world.EventTrigger;
 import com.gabs.rpggame.world.World;
 
 public class Main extends Canvas implements Runnable, KeyListener {
@@ -54,13 +56,15 @@ public class Main extends Canvas implements Runnable, KeyListener {
 	public static List<Entity> entities;
 	public static List<Entity> frontEntities;
 	public static List<DamageShot> damageShots;
+	public static List<EventTrigger> eventTriggers = new ArrayList<>();
+	
 	
 	public static List<Enemy> enemies;
 	public static Spritesheet spritesheet;
 	public static World world;
 	
 	public static Random random;
-	public UI ui;
+	public HUD ui;
 	public GameOverScreen gameOver = new GameOverScreen();
 	public PauseScreen pauseScreen = new PauseScreen();
 	public Transition transition = new Transition();
@@ -110,7 +114,7 @@ public class Main extends Canvas implements Runnable, KeyListener {
 		spritesheet = new Spritesheet("/dark.png");
 		damageShots = new ArrayList<>();
 		
-		ui = new UI();
+		ui = new HUD();
 		player = new Player();
 		player
 			.setWidth(GameProperties.TileSize)
@@ -120,7 +124,7 @@ public class Main extends Canvas implements Runnable, KeyListener {
 			.setSpeed(4);
 		addKeyListener(this);
 		
-		world = new World("/bedroom.png");
+		//world = new World("/bedroom.png");
 		entities.add(player);
 		
 		state = GameState.MAIN_MENU;
@@ -162,7 +166,9 @@ public class Main extends Canvas implements Runnable, KeyListener {
 		g.setColor(new Color(0, 0, 0));
 		g.fillRect(0, 0, GameProperties.ScreenWidth, GameProperties.ScreenHeight);
 		
-		world.render(g);
+		
+		if(world != null)
+			world.render(g);
 		for(int i = 0; i < entities.size(); i++) 
 			entities.get(i).render(g);
 		for(int i = 0; i < enemies.size(); i++) 
@@ -272,16 +278,24 @@ public class Main extends Canvas implements Runnable, KeyListener {
 	@Override
 	public void keyPressed(KeyEvent e) {
 		//Pause Menu
-		if(state == GameState.PAUSED && e.getKeyCode() == KeyEvent.VK_DOWN)
-			pauseScreen.changeOption(Direction.DOWN);
-		else if(state == GameState.PAUSED && e.getKeyCode() == KeyEvent.VK_UP)
-			pauseScreen.changeOption(Direction.UP);
+		if(state == GameState.PAUSED) {
+			if(e.getKeyCode() == KeyEvent.VK_DOWN)
+				pauseScreen.changeOption(Direction.DOWN);
+			else if(e.getKeyCode() == KeyEvent.VK_UP)
+				pauseScreen.changeOption(Direction.UP);
+			else if(e.getKeyCode() == KeyEvent.VK_Z)
+				pauseScreen.trigger();
+		}
 		
 		//Main Menu
-		if(state == GameState.MAIN_MENU && e.getKeyCode() == KeyEvent.VK_DOWN)
-			mainMenu.changeOption(Direction.DOWN);
-		else if(state == GameState.MAIN_MENU && e.getKeyCode() == KeyEvent.VK_UP)
-			mainMenu.changeOption(Direction.UP);
+		else if(state == GameState.MAIN_MENU) {
+			if(e.getKeyCode() == KeyEvent.VK_DOWN)
+				mainMenu.changeOption(Direction.DOWN);
+			else if(e.getKeyCode() == KeyEvent.VK_UP)
+				mainMenu.changeOption(Direction.UP);
+			if(e.getKeyCode() == KeyEvent.VK_Z)
+				mainMenu.trigger();
+		}
 		
 		//Player Movement
 		if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
@@ -297,7 +311,7 @@ public class Main extends Canvas implements Runnable, KeyListener {
 		}
 		
 		if(e.getKeyCode() == KeyEvent.VK_Z) {
-			//player.setAttacking(true);
+			eventTriggers.forEach((i) -> { if(i.isTriggered()) i.action.execute();});
 		}
 		
 		if(e.getKeyCode() == KeyEvent.VK_ESCAPE) {
@@ -309,11 +323,6 @@ public class Main extends Canvas implements Runnable, KeyListener {
 				state = GameState.PAUSED;
 			}
 		}
-		
-		if(e.getKeyCode() == KeyEvent.VK_E) {
-			Main.world = new World("/map2.png");
-		}
-		
 	}
 	@Override
 	public void keyReleased(KeyEvent e) {
@@ -335,5 +344,9 @@ public class Main extends Canvas implements Runnable, KeyListener {
 			player.getDownAnimation().setIndex(player.getDownAnimation().getStartIndex());
 		}
 		
+	}
+	
+	public static void closeGame() {
+		Main.frame.dispatchEvent(new WindowEvent(Main.frame, WindowEvent.WINDOW_CLOSING));
 	}
 }

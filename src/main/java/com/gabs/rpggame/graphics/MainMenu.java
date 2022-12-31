@@ -3,11 +3,14 @@ package com.gabs.rpggame.graphics;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.event.WindowEvent;
 
+import com.gabs.rpggame.GameState;
 import com.gabs.rpggame.Main;
 import com.gabs.rpggame.world.Direction;
+import com.gabs.rpggame.world.World;
 
-public class MainMenu {
+public class MainMenu implements UI {
 	
 	private int option = 0;
 	
@@ -52,5 +55,18 @@ public class MainMenu {
 	public MainMenu setOption(int option) {
 		this.option = option;
 		return this;
+	}
+
+	@Override
+	public void trigger() {
+		switch(option) {
+			case 0:
+				Main.world = new World("/bedroom.png");
+				Main.state = GameState.RUNNING;
+				break;
+			case 1:
+				Main.closeGame();
+				break;
+		}
 	}
 }
