@@ -30,12 +30,13 @@ import com.gabs.rpggame.entities.DamageShot;
 import com.gabs.rpggame.entities.Enemy;
 import com.gabs.rpggame.entities.Entity;
 import com.gabs.rpggame.entities.Player;
+import com.gabs.rpggame.graphics.Dialog;
 import com.gabs.rpggame.graphics.GameOverScreen;
+import com.gabs.rpggame.graphics.HUD;
 import com.gabs.rpggame.graphics.MainMenu;
 import com.gabs.rpggame.graphics.PauseScreen;
 import com.gabs.rpggame.graphics.Spritesheet;
 import com.gabs.rpggame.graphics.Transition;
-import com.gabs.rpggame.graphics.HUD;
 import com.gabs.rpggame.world.Direction;
 import com.gabs.rpggame.world.EventTrigger;
 import com.gabs.rpggame.world.World;
@@ -57,7 +58,7 @@ public class Main extends Canvas implements Runnable, KeyListener {
 	public static List<Entity> frontEntities;
 	public static List<DamageShot> damageShots;
 	public static List<EventTrigger> eventTriggers = new ArrayList<>();
-	
+	public static List<Dialog> dialogs = new ArrayList<Dialog>();
 	
 	public static List<Enemy> enemies;
 	public static Spritesheet spritesheet;
@@ -93,9 +94,12 @@ public class Main extends Canvas implements Runnable, KeyListener {
 			XSSFSheet sheet = wb.getSheetAt(0);
 			//FormulaEvaluator formulaEvaluator = wb.getCreationHelper().createFormulaEvaluator();  
 			for(Row row: sheet) {     //iteration over row using for each loop
+				List<String> data = new ArrayList<>();
 				for(Cell cell: row) {    //iteration over cell using for each loop  
+					data.add(cell.getStringCellValue());
 					System.out.println(cell.getStringCellValue());
 				}
+				dialogs.add(new Dialog().setSpeaker(data.get(0)).setMessage(data.get(0)));
 			}
 		} catch (IOException e) {
 			JOptionPane.showMessageDialog(null, e);
@@ -166,7 +170,6 @@ public class Main extends Canvas implements Runnable, KeyListener {
 		g.setColor(new Color(0, 0, 0));
 		g.fillRect(0, 0, GameProperties.ScreenWidth, GameProperties.ScreenHeight);
 		
-		
 		if(world != null)
 			world.render(g);
 		for(int i = 0; i < entities.size(); i++) 
@@ -179,6 +182,7 @@ public class Main extends Canvas implements Runnable, KeyListener {
 			damageShots.get(i).render(g);
 		//ui.render(g);
 		//transition.render(g);
+		dialogs.get(0).render(g);
 		switch(state) {
 			case RUNNING:
 				break;

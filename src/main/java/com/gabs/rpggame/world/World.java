@@ -60,7 +60,7 @@ public class World {
 					} else if(currentTile == 0xFFDD36E5) {
 						Main.player.setX(xx*Main.GameProperties.TileSize);
 						Main.player.setY(yy*Main.GameProperties.TileSize);
-						Main.eventTriggers.add(new EventTrigger().setAction(() -> System.out.println("xd")).setX(xx).setY(yy));
+						Main.eventTriggers.add(new EventTrigger().setAction(() -> System.out.println("xd")).setX(xx*Main.GameProperties.TileSize).setY(yy*Main.GameProperties.TileSize));
 						
 					}
 					else if (currentTile == 0xFFFF00FF) {
