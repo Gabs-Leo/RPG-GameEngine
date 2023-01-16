@@ -99,7 +99,7 @@ public class Main extends Canvas implements Runnable, KeyListener {
 					data.add(cell.getStringCellValue());
 					System.out.println(cell.getStringCellValue());
 				}
-				dialogs.add(new Dialog().setSpeaker(data.get(0)).setMessage(data.get(0)));
+				//dialogs.add(new Dialog().setSpeaker(data.get(0)).setMessage(data.get(0)));
 			}
 		} catch (IOException e) {
 			JOptionPane.showMessageDialog(null, e);
@@ -132,6 +132,8 @@ public class Main extends Canvas implements Runnable, KeyListener {
 		entities.add(player);
 		
 		state = GameState.MAIN_MENU;
+		
+		Sound.bg.loop();
 	};
 	
 	public void eventTick() {
@@ -182,7 +184,7 @@ public class Main extends Canvas implements Runnable, KeyListener {
 			damageShots.get(i).render(g);
 		//ui.render(g);
 		//transition.render(g);
-		dialogs.get(0).render(g);
+		//dialogs.get(0).render(g);
 		switch(state) {
 			case RUNNING:
 				break;
@@ -231,7 +233,6 @@ public class Main extends Canvas implements Runnable, KeyListener {
 		
 		double timer = System.currentTimeMillis();
 		requestFocus();
-		
 
 		while(running) {
 			long now = System.nanoTime();
@@ -302,27 +303,31 @@ public class Main extends Canvas implements Runnable, KeyListener {
 		}
 		
 		//Player Movement
-		if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
-			player.setRight(true);
-		} else if (e.getKeyCode() == KeyEvent.VK_LEFT) {
-			player.setLeft(true);
-		}
-		
-		if(e.getKeyCode() == KeyEvent.VK_UP) {
-			player.setUp(true);
-		} else if (e.getKeyCode() == KeyEvent.VK_DOWN) {
-			player.setDown(true);
-		}
-		
-		if(e.getKeyCode() == KeyEvent.VK_Z) {
-			eventTriggers.forEach((i) -> { if(i.isTriggered()) i.action.execute();});
+		else if(state == GameState.RUNNING) {
+			if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
+				player.setRight(true);
+			} else if (e.getKeyCode() == KeyEvent.VK_LEFT) {
+				player.setLeft(true);
+			}
+			
+			if(e.getKeyCode() == KeyEvent.VK_UP) {
+				player.setUp(true);
+			} else if (e.getKeyCode() == KeyEvent.VK_DOWN) {
+				player.setDown(true);
+			}
+			
+			if(e.getKeyCode() == KeyEvent.VK_Z) {
+				eventTriggers.forEach((i) -> { if(i.isTriggered()) i.action.execute();});
+			}
 		}
 		
 		if(e.getKeyCode() == KeyEvent.VK_ESCAPE) {
 			if(state == GameState.PAUSED) {
 				transition.endTransition();
+				Sound.bg.play();
 				state = GameState.RUNNING;
 			} else if (state == GameState.RUNNING){
+				Sound.bg.stop();
 				transition.startTransition();
 				state = GameState.PAUSED;
 			}
